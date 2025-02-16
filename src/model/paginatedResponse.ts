@@ -5,4 +5,4 @@ interface PaginatedResponse<T> {
    results: T[];
 }
 
-export type {PaginatedResponse};
+export type { PaginatedResponse };

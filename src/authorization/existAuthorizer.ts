@@ -3,7 +3,7 @@ import type { Scope } from "../model/scope.ts";
 type AuthorizationFile = {
    oAuthToken: string;
    refreshToken: string;
-}
+};
 
 type OAuthTokenResponse = {
    access_token: string;
@@ -11,7 +11,7 @@ type OAuthTokenResponse = {
    token_type: string;
    expires_in: number;
    scope: string;
-}
+};
 
 enum AuthStrategy {
    FILE = "file",
@@ -28,17 +28,23 @@ export default class ExistAuthorizer {
 
    constructor(clientId: string, clientSecret: string) {
       this.clientId = clientId;
-      this.clientSecret = clientSecret
+      this.clientSecret = clientSecret;
    }
 
-   public authorizeRequest(request: Request) { request.headers.set("Authorization", `Bearer ${this.oAuthToken}`); }
+   public authorizeRequest(request: Request) {
+      request.headers.set("Authorization", `Bearer ${this.oAuthToken}`);
+   }
 
    public useAuthorizationFile(filePath: string) {
       const file = Deno.readTextFileSync(filePath);
 
       const data = JSON.parse(file) as AuthorizationFile;
-      if (!data.oAuthToken) { throw new Error("Invalid authorization file: missing oAuthToken"); }
-      if (!data.refreshToken) { throw new Error("Invalid authorization file: missing refreshToken"); }
+      if (!data.oAuthToken) {
+         throw new Error("Invalid authorization file: missing oAuthToken");
+      }
+      if (!data.refreshToken) {
+         throw new Error("Invalid authorization file: missing refreshToken");
+      }
       this.oAuthToken = data.oAuthToken;
       this.refreshToken = data.refreshToken;
    }
@@ -48,17 +54,23 @@ export default class ExistAuthorizer {
       this.refreshToken = refreshToken;
    }
 
-   public async useOAuthFlow(scope: Scope | Scope[], redirectUri: string) { 
-      const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
+   public async useOAuthFlow(scope: Scope | Scope[], redirectUri: string) {
+      const authorizationGrant = await this.getOAuthAuthorizationGrant(
+         scope,
+         redirectUri,
+      );
       const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri);
-      
+
       this.oAuthToken = tokens.access_token;
       this.refreshToken = tokens.refresh_token;
 
       console.log("Authorization successful!", tokens);
    }
 
-   private getOAuthTokens(authorizationGrant: string, redirectUri: string): Promise<OAuthTokenResponse> {
+   private getOAuthTokens(
+      authorizationGrant: string,
+      redirectUri: string,
+   ): Promise<OAuthTokenResponse> {
       return new Promise((resolve, reject) => {
          const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
 
@@ -73,14 +85,21 @@ export default class ExistAuthorizer {
                redirect_uri: redirectUri,
             }),
          }).then((response) => {
-            if (!response.ok) { reject(`Failed to get OAuth tokens: ${response.status} → ${response.statusText}`); }
+            if (!response.ok) {
+               reject(
+                  `Failed to get OAuth tokens: ${response.status} → ${response.statusText}`,
+               );
+            }
 
             resolve(response.json() as Promise<OAuthTokenResponse>);
-         })
+         });
       });
    }
 
-   private getOAuthAuthorizationGrant(scope: Scope | Scope[], redirectUri: string): Promise<string> {
+   private getOAuthAuthorizationGrant(
+      scope: Scope | Scope[],
+      redirectUri: string,
+   ): Promise<string> {
       const params = {
          client_id: this.clientId,
          response_type: "code",
@@ -88,16 +107,23 @@ export default class ExistAuthorizer {
          scope: typeof scope === "string" ? scope : scope.join("+"),
       };
 
-      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${new URLSearchParams(params)}`;
+      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${new URLSearchParams(
+         params,
+      )}`;
       const redirectUrlObject = new URL(redirectUri);
 
-      if (redirectUrlObject.hostname !== "localhost" && redirectUrlObject.hostname !== "127.0.0.1") {
-         throw new Error("Redirect URI must be localhost or 127.0.0.1 for OAuth flow.");
+      if (
+         redirectUrlObject.hostname !== "localhost" &&
+         redirectUrlObject.hostname !== "127.0.0.1"
+      ) {
+         throw new Error(
+            "Redirect URI must be localhost or 127.0.0.1 for OAuth flow.",
+         );
       }
 
       return new Promise((resolve, reject) => {
          console.log(`Please visit this URL to authorize Exist: ${oAuthUrl}`);
-         
+
          const server = Deno.serve({
             port: +redirectUrlObject.port,
             onListen() {
@@ -109,10 +135,13 @@ export default class ExistAuthorizer {
             if (code) {
                server.shutdown();
                resolve(code);
-               return new Response("Authentication successful! You can close this tab.", {
-                  status: 200,
-                  headers: { "Content-Type": "text/plain" },
-               });
+               return new Response(
+                  "Authentication successful! You can close this tab.",
+                  {
+                     status: 200,
+                     headers: { "Content-Type": "text/plain" },
+                  },
+               );
             } else {
                server.shutdown();
                reject();

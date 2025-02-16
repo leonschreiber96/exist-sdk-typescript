@@ -120,6 +120,6 @@ type AttributeTemplate = {
    priority: number;
    value_type: AttributeValueType;
    value_type_description: string;
-}
+};
 
 export type { AttributeTemplate, AttributeTemplateId };

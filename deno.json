@@ -3,5 +3,12 @@
       "include": [
          "src/**/*.ts"
       ]
+   },
+   "fmt": {
+      "include": [
+         "src/**/*.ts"
+      ],
+      "indentWidth": 3,
+      "semiColons": true
    }
 }

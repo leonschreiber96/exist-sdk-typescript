@@ -32,4 +32,4 @@ type AttributeWithValues<T> = Attribute & {
    }[];
 };
 
-export type { Attribute, AttributeWithValues }; 
+export type { Attribute, AttributeWithValues };
