@@ -1,4 +1,11 @@
 import ExistAuthorizer from "./authorization/existAuthorizer.ts";
+import { type GetAttributesParams, getAttributesRequest } from "./endpoints/getAttributesRequest.ts";
+import {
+   type GetAttributeTemplatesParams,
+   getAttributeTemplatesRequest,
+} from "./endpoints/getAttributeTemplatesRequest.ts";
+import { type GetAveragesParams, getAveragesRequest } from "./endpoints/getAveragesRequest.ts";
+import { getUserProfileRequest } from "./endpoints/getUserProfileRequest.ts";
 import type { Attribute } from "./model/attribute.ts";
 import type { AttributeAverage } from "./model/attributeAverage.ts";
 import type { AttributeTemplate } from "./model/attributeTemplate.ts";
@@ -14,113 +21,27 @@ export default class ExistClient {
       this.authorizer = authorizer;
    }
 
-   public async getUserProfile(): Promise<UserProfile> {
-      const url = `${API_URL}/accounts/profile/`;
-      const data = await this.authAndFetch<UserProfile>(url, "GET");
-      return data;
+   public async getUserProfile() {
+      const request = getUserProfileRequest(API_URL);
+      return await this.authAndFetch<UserProfile>(request);
    }
 
-   public async getAverages(parameters?: {
-      page?: number;
-      limit?: number;
-      dateMin?: Date;
-      dateMax?: Date;
-      groups?: string[];
-      attributes?: string[];
-      includeHistorical?: boolean;
-   }): Promise<PaginatedResponse<AttributeAverage>> {
-      const url = `${API_URL}/averages/`;
-
-      const params = new URLSearchParams();
-      if (parameters?.page) params.set("page", parameters.page.toString());
-      if (parameters?.limit) params.set("limit", parameters.limit.toString());
-      if (parameters?.dateMin) {
-         params.set("date_min", parameters.dateMin.toISOString());
-      }
-      if (parameters?.dateMax) {
-         params.set("date_max", parameters.dateMax.toISOString());
-      }
-      if (parameters?.groups) params.set("groups", parameters.groups.join(","));
-      if (parameters?.attributes) {
-         params.set("attributes", parameters.attributes.join(","));
-      }
-      if (parameters?.includeHistorical) {
-         params.set("include_historical", "true");
-      }
-
-      const urlWithParams = `${url}?${params.toString()}`;
-      const data = await this.authAndFetch<PaginatedResponse<AttributeAverage>>(
-         urlWithParams,
-         "GET",
-      );
-      return data;
+   public async getAverages(parameters?: GetAveragesParams) {
+      const request = getAveragesRequest(API_URL, parameters);
+      return await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request);
    }
 
-   public async getAttributeTemplates(parameters?: {
-      page?: number;
-      limit?: number;
-      includeLowPriority?: boolean;
-      groups?: string[];
-   }): Promise<PaginatedResponse<AttributeTemplate>> {
-      const url = `${API_URL}/attributes/templates/`;
-
-      const params = new URLSearchParams();
-      if (parameters?.page) params.set("page", parameters.page.toString());
-      if (parameters?.limit) params.set("limit", parameters.limit.toString());
-      if (parameters?.includeLowPriority) {
-         params.set("include_low_priority", "true");
-      }
-      if (parameters?.groups) params.set("groups", parameters.groups.join(","));
-
-      const urlWithParams = `${url}?${params.toString()}`;
-      const data = await this.authAndFetch<
-         PaginatedResponse<AttributeTemplate>
-      >(urlWithParams, "GET");
-      return data;
+   public async getAttributeTemplates(parameters?: GetAttributeTemplatesParams) {
+      const request = getAttributeTemplatesRequest(API_URL, parameters);
+      return await this.authAndFetch<PaginatedResponse<AttributeTemplate>>(request);
    }
 
-   public async getAttributes(parameters?: {
-      page?: number;
-      limit?: number;
-      groups?: string[];
-      attributes?: string[];
-      excludeCustom?: boolean;
-      manual?: boolean;
-      includeInactive?: boolean;
-      includeLowPriority?: boolean;
-      owned?: boolean;
-   }): Promise<PaginatedResponse<Attribute>> {
-      const url = `${API_URL}/attributes/`;
-
-      const params = new URLSearchParams();
-      if (parameters?.page) params.set("page", parameters.page.toString());
-      if (parameters?.limit) params.set("limit", parameters.limit.toString());
-      if (parameters?.groups) params.set("groups", parameters.groups.join(","));
-      if (parameters?.attributes) {
-         params.set("attributes", parameters.attributes.join(","));
-      }
-      if (parameters?.excludeCustom) params.set("exclude_custom", "true");
-      if (parameters?.manual) params.set("manual", "true");
-      if (parameters?.includeInactive) params.set("include_inactive", "true");
-      if (parameters?.includeLowPriority) {
-         params.set("include_low_priority", "true");
-      }
-      if (parameters?.owned) params.set("owned", "true");
-
-      const urlWithParams = `${url}?${params.toString()}`;
-      const data = await this.authAndFetch<PaginatedResponse<Attribute>>(
-         urlWithParams,
-         "GET",
-      );
-      return data;
+   public async getAttributes(parameters?: GetAttributesParams) {
+      const request = getAttributesRequest(API_URL, parameters);
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
    }
 
-   private async authAndFetch<T>(
-      url: string,
-      method: string,
-      body?: BodyInit,
-   ): Promise<T> {
-      const request = new Request(url, { method, body });
+   private async authAndFetch<T>(request: Request): Promise<T> {
       this.authorizer.authorizeRequest(request);
       const response = await fetch(request);
 
@@ -128,9 +49,9 @@ export default class ExistClient {
          throw new Error(
             `Failed to fetch data: ${response.status} → ${response.statusText}`,
          );
-      } else {
-         const json = await response.json();
-         return json as T;
       }
+
+      const json = await response.json();
+      return json as T;
    }
 }

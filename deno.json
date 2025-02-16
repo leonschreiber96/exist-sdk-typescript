@@ -9,6 +9,7 @@
          "src/**/*.ts"
       ],
       "indentWidth": 3,
-      "semiColons": true
+      "semiColons": true,
+      "lineWidth": 120
    }
 }
