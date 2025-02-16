@@ -11,23 +11,17 @@ export type GetAttributesParams = {
 };
 
 export function getAttributesRequest(baseUrl: string, parameters?: GetAttributesParams): Request {
-   const url = `${baseUrl}/attributes/`;
+   const url = new URL(`${baseUrl}/attributes/`);
 
-   const params = new URLSearchParams();
-   if (parameters?.page) params.set("page", parameters.page.toString());
-   if (parameters?.limit) params.set("limit", parameters.limit.toString());
-   if (parameters?.groups) params.set("groups", parameters.groups.join(","));
-   if (parameters?.attributes) {
-      params.set("attributes", parameters.attributes.join(","));
-   }
-   if (parameters?.excludeCustom) params.set("exclude_custom", "true");
-   if (parameters?.manual) params.set("manual", "true");
-   if (parameters?.includeInactive) params.set("include_inactive", "true");
-   if (parameters?.includeLowPriority) {
-      params.set("include_low_priority", "true");
-   }
-   if (parameters?.owned) params.set("owned", "true");
+   if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
+   if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
+   if (parameters?.groups) url.searchParams.append("groups", parameters.groups.join(","));
+   if (parameters?.attributes) url.searchParams.append("attributes", parameters.attributes.join(","));
+   if (parameters?.excludeCustom) url.searchParams.append("exclude_custom", "true");
+   if (parameters?.manual) url.searchParams.append("manual", "true");
+   if (parameters?.includeInactive) url.searchParams.append("include_inactive", "true");
+   if (parameters?.includeLowPriority) url.searchParams.append("include_low_priority", "true");
+   if (parameters?.owned) url.searchParams.append("owned", "true");
 
-   const urlWithParams = `${url}?${params.toString()}`;
-   return new Request(urlWithParams, { method: "GET" });
+   return new Request(url.toString());
 }

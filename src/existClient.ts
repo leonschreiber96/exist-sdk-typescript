@@ -1,12 +1,14 @@
 import ExistAuthorizer from "./authorization/existAuthorizer.ts";
+import { GetAttributeParams, getAttributeRequest } from "./endpoints/getAttributeRequest.ts";
 import { type GetAttributesParams, getAttributesRequest } from "./endpoints/getAttributesRequest.ts";
+import { getAttributesWithValuesRequest } from "./endpoints/getAttributesWithValuesRequest.ts";
 import {
    type GetAttributeTemplatesParams,
    getAttributeTemplatesRequest,
 } from "./endpoints/getAttributeTemplatesRequest.ts";
 import { type GetAveragesParams, getAveragesRequest } from "./endpoints/getAveragesRequest.ts";
 import { getUserProfileRequest } from "./endpoints/getUserProfileRequest.ts";
-import type { Attribute } from "./model/attribute.ts";
+import type { Attribute, AttributeWithValues } from "./model/attribute.ts";
 import type { AttributeAverage } from "./model/attributeAverage.ts";
 import type { AttributeTemplate } from "./model/attributeTemplate.ts";
 import type { PaginatedResponse } from "./model/paginatedResponse.ts";
@@ -39,6 +41,16 @@ export default class ExistClient {
    public async getAttributes(parameters?: GetAttributesParams) {
       const request = getAttributesRequest(API_URL, parameters);
       return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+   }
+
+   public async getAttributesWithValues(parameters?: GetAttributesParams) {
+      const request = getAttributesWithValuesRequest(API_URL, parameters);
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+   }
+
+   public async getAttribute<T>(attribute: string, parameters?: GetAttributeParams) {
+      const request = getAttributeRequest(API_URL, attribute, parameters);
+      return await this.authAndFetch<PaginatedResponse<AttributeWithValues<T>>>(request);
    }
 
    private async authAndFetch<T>(request: Request): Promise<T> {

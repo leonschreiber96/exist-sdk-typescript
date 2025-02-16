@@ -23,6 +23,10 @@ type Attribute = {
       name: string;
       label: string;
    }[];
+   values: {
+      date: string;
+      value: string;
+   };
 };
 
 type AttributeWithValues<T> = Attribute & {
