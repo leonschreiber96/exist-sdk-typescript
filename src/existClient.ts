@@ -115,11 +115,10 @@ export default class ExistClient {
       return data;
    }
 
-   // deno-lint-ignore no-explicit-any
    private async authAndFetch<T>(
       url: string,
       method: string,
-      body?: any,
+      body?: BodyInit,
    ): Promise<T> {
       const request = new Request(url, { method, body });
       this.authorizer.authorizeRequest(request);
