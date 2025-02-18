@@ -19,7 +19,7 @@ export function getAttributesWithValuesRequest(baseUrl: string, parameters?: Get
    if (parameters?.groups) url.searchParams.append("groups", parameters.groups.join(","));
    if (parameters?.attributes) url.searchParams.append("attributes", parameters.attributes.join(","));
    if (parameters?.templates) url.searchParams.append("templates", parameters.templates.join(","));
-   if (parameters?.manual) url.searchParams.append("manual", "true");
+   if (parameters?.manual) url.searchParams.append("manual", "1");
 
    return new Request(url.toString());
 }

@@ -17,7 +17,7 @@ export function getAveragesRequest(baseUrl: string, parameters?: GetAveragesPara
    if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax.toISOString());
    if (parameters?.groups) url.searchParams.append("groups", parameters.groups.join(","));
    if (parameters?.attributes) url.searchParams.append("attributes", parameters.attributes.join(","));
-   if (parameters?.includeHistorical) url.searchParams.append("include_historical", "true");
+   if (parameters?.includeHistorical) url.searchParams.append("include_historical", "1");
 
    return new Request(url.toString());
 }

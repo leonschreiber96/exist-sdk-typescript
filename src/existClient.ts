@@ -7,10 +7,12 @@ import {
    getAttributeTemplatesRequest,
 } from "./endpoints/getAttributeTemplatesRequest.ts";
 import { type GetAveragesParams, getAveragesRequest } from "./endpoints/getAveragesRequest.ts";
+import { type GetCorrelationsParams, getCorrelationsRequest } from "./endpoints/getCorrelationsRequest.ts";
 import { getUserProfileRequest } from "./endpoints/getUserProfileRequest.ts";
 import type { Attribute, AttributeWithValues } from "./model/attribute.ts";
 import type { AttributeAverage } from "./model/attributeAverage.ts";
 import type { AttributeTemplate } from "./model/attributeTemplate.ts";
+import type { Correlation } from "./model/Correlation.ts";
 import type { PaginatedResponse } from "./model/paginatedResponse.ts";
 import type { UserProfile } from "./model/userProfile.ts";
 
@@ -51,6 +53,11 @@ export default class ExistClient {
    public async getAttribute<T>(attribute: string, parameters?: GetAttributeParams) {
       const request = getAttributeRequest(API_URL, attribute, parameters);
       return await this.authAndFetch<PaginatedResponse<AttributeWithValues<T>>>(request);
+   }
+
+   public async getCorrelations(parameters?: GetCorrelationsParams) {
+      const request = getCorrelationsRequest(API_URL, parameters);
+      return await this.authAndFetch<PaginatedResponse<Correlation>>(request);
    }
 
    private async authAndFetch<T>(request: Request): Promise<T> {
