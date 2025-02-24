@@ -11,7 +11,7 @@ import { getCorrelationRequest } from "./endpoints/getCorrelationRequest.ts";
 import { type GetCorrelationsParams, getCorrelationsRequest } from "./endpoints/getCorrelationsRequest.ts";
 import { GetInsightsParams, getInsightsRequest } from "./endpoints/getInsightsRequest.ts";
 import { getUserProfileRequest } from "./endpoints/getUserProfileRequest.ts";
-import type { Attribute, AttributeWithValues } from "./model/attribute.ts";
+import type { Attribute } from "./model/attribute.ts";
 import type { AttributeAverage } from "./model/attributeAverage.ts";
 import type { AttributeTemplate } from "./model/attributeTemplate.ts";
 import type { Correlation } from "./model/correlation.ts";
@@ -53,9 +53,9 @@ export default class ExistClient {
       return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
    }
 
-   public async getAttribute<T>(attribute: string, parameters?: GetAttributeParams) {
+   public async getAttribute(attribute: string, parameters?: GetAttributeParams) {
       const request = getAttributeRequest(API_URL, attribute, parameters);
-      return await this.authAndFetch<PaginatedResponse<AttributeWithValues<T>>>(request);
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
    }
 
    public async getCorrelations(parameters?: GetCorrelationsParams) {
@@ -64,7 +64,7 @@ export default class ExistClient {
    }
 
    public async getCorrelation(attribute1: string, attribute2: string) {
-      const request = getCorrelationRequest(API_URL, { attribute: attribute1, attribute2 });
+      const request = getCorrelationRequest(API_URL, [attribute1, attribute2]);
       return await this.authAndFetch<Correlation>(request);
    }
 

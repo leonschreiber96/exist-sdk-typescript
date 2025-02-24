@@ -1,5 +1,12 @@
 import type AttributeValueType from "./attributeValueType.ts";
 
+/**
+ * All the "official" attributes we currently support (see https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
+ *
+ *  Templated attributes are treated differently because we "understand" them — they receive their own insights, individual wording for correlations, and so on. You should prefer them over custom attributes where possible. Attributes that are "templated" take their name and value type from the template.
+ *
+ * **Note:** The group an attribute belongs to may change in future, but attribute names should be considered stable.
+ */
 enum AttributeTemplateId {
    // Activity
    Steps = "steps",
