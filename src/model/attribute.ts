@@ -12,7 +12,7 @@ import type AttributeValueType from "./attributeValueType.ts";
  *
  * If there is no data for a particular date, this will be reflected with a null value — you should expect to receive a list of results containing every single day, rather than days without data being omitted.
  */
-interface Attribute {
+export default interface Attribute {
    template: AttributeTemplateId;
    /** Unique ID of the attribute. */
    name: string;
@@ -52,5 +52,3 @@ interface Attribute {
       value: string;
    };
 }
-
-export type { Attribute };

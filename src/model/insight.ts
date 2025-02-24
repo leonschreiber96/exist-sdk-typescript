@@ -9,7 +9,7 @@ import AttributeValueType from "./attributeValueType.ts";
  *
  * HTML and text output is provided.
  */
-export interface Insight {
+export default interface Insight {
    created: string;
    target_date: string;
    type: {

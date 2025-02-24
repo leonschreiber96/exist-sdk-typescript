@@ -11,13 +11,13 @@ import { getCorrelationRequest } from "./endpoints/getCorrelationRequest.ts";
 import { type GetCorrelationsParams, getCorrelationsRequest } from "./endpoints/getCorrelationsRequest.ts";
 import { GetInsightsParams, getInsightsRequest } from "./endpoints/getInsightsRequest.ts";
 import { getUserProfileRequest } from "./endpoints/getUserProfileRequest.ts";
-import type { Attribute } from "./model/attribute.ts";
-import type { AttributeAverage } from "./model/attributeAverage.ts";
-import type { AttributeTemplate } from "./model/attributeTemplate.ts";
-import type { Correlation } from "./model/correlation.ts";
-import { Insight } from "./model/insight.ts";
-import type { PaginatedResponse } from "./model/paginatedResponse.ts";
-import type { UserProfile } from "./model/userProfile.ts";
+import Attribute from "./model/attribute.ts";
+import AttributeAverage from "./model/attributeAverage.ts";
+import { AttributeTemplate } from "./model/attributeTemplate.ts";
+import Correlation from "./model/correlation.ts";
+import Insight from "./model/insight.ts";
+import PaginatedResponse from "./model/paginatedResponse.ts";
+import UserProfile from "./model/userProfile.ts";
 
 const API_URL = "https://exist.io/api/2";
 

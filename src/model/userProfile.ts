@@ -4,7 +4,7 @@
  * → Use timezone to show times in the correct time zone for the user.
  * → Use the imperial_* flags to know which values to show in imperial units.
  */
-interface UserProfile {
+export default interface UserProfile {
    username: string;
    first_name: string;
    last_name: string;
@@ -19,5 +19,3 @@ interface UserProfile {
    trial: boolean;
    delinquent: boolean;
 }
-
-export type { UserProfile };
