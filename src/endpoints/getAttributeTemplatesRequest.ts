@@ -1,10 +1,20 @@
-export type GetAttributeTemplatesParams = {
-   page?: number;
-   limit?: number;
+import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+
+export type GetAttributeTemplatesParams = PaginatedRequestParams & {
+   /** *Optional* Boolean flag, set to `true` to include attributes with a priority >= 10 */
    includeLowPriority?: boolean;
+
+   /** *Optional* List of groups to filter by, e.g. `['activity', 'workouts']` */
    groups?: string[];
 };
 
+/**
+ * Returns a request object with a GET request that retrieves a user's attribute templates (see https://developer.exist.io/reference/attributes/#get-attribute-templates).
+ * @param baseUrl - The base URL for the REST API.
+ * @param [parameters] - *Optional* The query parameters to include in the request.
+ *
+ * @returns A request object with a GET request for the `/attributes/templates` endpoint and the specified query parameters.
+ */
 export function getAttributeTemplatesRequest(baseUrl: string, parameters?: GetAttributeTemplatesParams): Request {
    const url = new URL(`${baseUrl}/attributes/templates/`);
 

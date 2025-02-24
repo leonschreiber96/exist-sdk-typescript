@@ -1,6 +1,5 @@
 import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
 
-/** URL parameters for a GET request to retrieve a user's attributes. */
 export type GetAttributesParams = PaginatedRequestParams & {
    /** *Optional* Comma-separated list of groups to filter by, e.g. activity, workouts, ... */
    groups?: string[];
@@ -25,7 +24,7 @@ export type GetAttributesParams = PaginatedRequestParams & {
 };
 
 /**
- * Returns a request object with a GET request that retrieves a user's attributes (without values).
+ * Returns a request object with a GET request that retrieves a user's attributes **without** values (see https://developer.exist.io/reference/attributes/#get-a-users-attributes).
  * @param baseUrl - The base URL for the REST API.
  * @param [parameters] - *Optional* The query parameters to include in the request.
  *

@@ -1,13 +1,12 @@
 import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
 
-/** URL parameters for a GET request to retrieve a single attribute and its values. */
 export type GetAttributeParams = PaginatedRequestParams & {
    /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
    dateMax?: Date;
 };
 
 /**
- * Returns a request object with a GET request that retrieves a single attribute and its values.
+ * Returns a request object with a GET request that retrieves a single attribute and its values (see https://developer.exist.io/reference/attributes/#get-a-specific-attribute).
  * @param baseUrl - The base URL for the REST API.
  * @param attribute - The name of the attribute to get values for.
  * @param [parameters] - *Optional* The query parameters to include in the request.
