@@ -1,9 +1,19 @@
-export type GetAttributeParams = {
-   limit?: number;
-   page?: number;
+import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+
+/** URL parameters for a GET request to retrieve a single attribute and its values. */
+export type GetAttributeParams = PaginatedRequestParams & {
+   /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
    dateMax?: Date;
 };
 
+/**
+ * Returns a request object with a GET request that retrieves a single attribute and its values.
+ * @param baseUrl - The base URL for the REST API.
+ * @param attribute - The name of the attribute to get values for.
+ * @param [parameters] - *Optional* The query parameters to include in the request.
+ *
+ * @returns A request object with a GET request for the `/attributes/values/` endpoint and the specified query parameters.
+ */
 export function getAttributeRequest(baseUrl: string, attribute: string, parameters?: GetAttributeParams): Request {
    const url = new URL(`${baseUrl}/attributes/values/`);
 

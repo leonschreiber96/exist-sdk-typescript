@@ -1,15 +1,36 @@
-export type GetAttributesParams = {
-   page?: number;
-   limit?: number;
+import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+
+/** URL parameters for a GET request to retrieve a user's attributes. */
+export type GetAttributesParams = PaginatedRequestParams & {
+   /** *Optional* Comma-separated list of groups to filter by, e.g. activity, workouts, ... */
    groups?: string[];
+
+   /** *Optional* Comma-separated list of attributes to filter by. */
    attributes?: string[];
+
+   /** *Optional* Boolean flag, set to `true` to only show templated attributes. */
    excludeCustom?: boolean;
+
+   /** *Optional* Boolean flag, set to `true` to only show manual attributes or false to exclude. */
    manual?: boolean;
+
+   /** *Optional* Boolean flag, set to `true` to include attributes with `active = false`, usually hidden. */
    includeInactive?: boolean;
+
+   /** *Optional* Boolean flag, set to `true` to include attributes with `priority >= 10`. */
    includeLowPriority?: boolean;
+
+   /** *Optional* Boolean flag, set to `true` to omit attributes not owned by this client. */
    owned?: boolean;
 };
 
+/**
+ * Returns a request object with a GET request that retrieves a user's attributes (without values).
+ * @param baseUrl - The base URL for the REST API.
+ * @param [parameters] - *Optional* The query parameters to include in the request.
+ *
+ * @returns A request object with a GET request for the `/attributes/` endpoint and the specified query parameters.
+ */
 export function getAttributesRequest(baseUrl: string, parameters?: GetAttributesParams): Request {
    const url = new URL(`${baseUrl}/attributes/`);
 
