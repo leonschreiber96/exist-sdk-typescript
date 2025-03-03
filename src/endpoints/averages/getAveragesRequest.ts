@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetAveragesParams = PaginatedRequestParams & {
    /** *Optional* `yyyy-mm-dd`formatted date string defining the minimum (oldest) date inclusive. */

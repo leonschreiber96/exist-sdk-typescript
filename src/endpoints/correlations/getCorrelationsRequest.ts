@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetCorrelationsParams = PaginatedRequestParams & {
    /** *Optional* Boolean flag, set to `true` to return only correlations above a certain relationship strength. */

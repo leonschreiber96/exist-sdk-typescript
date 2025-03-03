@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetAttributeTemplatesParams = PaginatedRequestParams & {
    /** *Optional* Boolean flag, set to `true` to include attributes with a priority >= 10 */

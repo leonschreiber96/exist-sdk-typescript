@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetAttributesParams = PaginatedRequestParams & {
    /** *Optional* Comma-separated list of groups to filter by, e.g. activity, workouts, ... */

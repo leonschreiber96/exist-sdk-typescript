@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "./_paginatedRequestParams.ts";
+import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetInsightsParams = PaginatedRequestParams & {
    /** *Optional* Oldest date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
