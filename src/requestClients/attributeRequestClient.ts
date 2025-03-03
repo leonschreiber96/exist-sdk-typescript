@@ -1,15 +1,15 @@
-import ExistAuthorizer from "./authorization/existAuthorizer.ts";
-import Attribute from "./model/attribute.ts";
-import PaginatedResponse from "./model/paginatedResponse.ts";
-import { GetAttributeParams, getAttributeRequest } from "./endpoints/attributes/getAttributeRequest.ts";
-import AuthorizedRequestClient from "./authorization/authorizedRequestClient.ts";
-import { getAttributesWithValuesRequest } from "./endpoints/attributes/getAttributesWithValuesRequest.ts";
+import ExistAuthorizer from "../authorization/existAuthorizer.ts";
+import Attribute from "../model/attribute.ts";
+import PaginatedResponse from "../model/paginatedResponse.ts";
+import { GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
+import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
+import { getAttributesWithValuesRequest } from "../endpoints/attributes/getAttributesWithValuesRequest.ts";
 import {
    GetAttributeTemplatesParams,
    getAttributeTemplatesRequest,
-} from "./endpoints/attributes/getAttributeTemplatesRequest.ts";
-import { GetAttributesParams, getAttributesRequest } from "./endpoints/attributes/getAttributesRequest.ts";
-import { AttributeTemplate } from "./model/attributeTemplate.ts";
+} from "../endpoints/attributes/getAttributeTemplatesRequest.ts";
+import { GetAttributesParams, getAttributesRequest } from "../endpoints/attributes/getAttributesRequest.ts";
+import { AttributeTemplate } from "../model/attributeTemplate.ts";
 
 export default class AttributeRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {

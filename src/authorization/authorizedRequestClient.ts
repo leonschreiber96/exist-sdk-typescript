@@ -1,5 +1,5 @@
 import ExistAuthorizer from "./existAuthorizer.ts";
-import BaseRequestClient from "../requestClients/baseRequestClient.ts";
+import BaseRequestClient from "../requestClients/_baseRequestClient.ts";
 
 export default abstract class AuthorizedRequestClient extends BaseRequestClient {
    private authorizer: ExistAuthorizer;
