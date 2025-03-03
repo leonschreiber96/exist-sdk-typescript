@@ -15,7 +15,7 @@ export default class InsightRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing the insights for the authenticated user as `Insight` objects.
     */
-   public async getInsights(parameters?: GetInsightsParams) {
+   public async getMany(parameters?: GetInsightsParams) {
       const request = getInsightsRequest(this.baseUrl, parameters);
       return await this.authAndFetch<PaginatedResponse<Insight>>(request);
    }

@@ -17,7 +17,7 @@ export default class CorrelationRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing all correlations as `Correlation` objects.
     */
-   public async getCorrelations(parameters?: GetCorrelationsParams) {
+   public async getMany(parameters?: GetCorrelationsParams) {
       const request = getCorrelationsRequest(this.baseUrl, parameters);
       return await this.authAndFetch<PaginatedResponse<Correlation>>(request);
    }
@@ -30,7 +30,7 @@ export default class CorrelationRequestClient extends AuthorizedRequestClient {
     * @param attribute2 - The name of the second attribute to compare.
     * @returns The correlation between the two attributes as a `Correlation` object.
     */
-   public async getCorrelation(attribute1: string, attribute2: string) {
+   public async getSingle(attribute1: string, attribute2: string) {
       const request = getCorrelationRequest(this.baseUrl, [attribute1, attribute2]);
       return await this.authAndFetch<Correlation>(request);
    }

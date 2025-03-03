@@ -9,17 +9,15 @@ export default abstract class AuthorizedRequestClient extends BaseRequestClient 
       this.authorizer = authorizer;
    }
 
-   protected async authAndFetch<T>(request: Request): Promise<T> {
+   protected async authAndFetch<T>(request: Request): Promise<T & { statusCode: number } | { statusCode: number }> {
       this.authorizer.authorizeRequest(request);
       const response = await fetch(request);
 
-      if (!response.ok) {
-         throw new Error(
-            `Failed to fetch data: ${response.status} → ${response.statusText}`,
-         );
+      try {
+         const data = await response.json();
+         return { ...data, statusCode: response.status };
+      } catch (_error) {
+         return { statusCode: response.status } as { statusCode: number };
       }
-
-      const json = await response.json();
-      return json as T;
    }
 }

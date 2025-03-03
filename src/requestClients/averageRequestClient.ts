@@ -17,7 +17,7 @@ export default class AverageRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing the most recent average values for each attribute.
     */
-   public async getAverages(parameters?: GetAveragesParams) {
+   public async getMany(parameters?: GetAveragesParams) {
       const request = getAveragesRequest(this.baseUrl, parameters);
       return await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request);
    }
