@@ -1,5 +1,5 @@
 import ExistAuthorizer from "./authorization/existAuthorizer.ts";
-import AttributeRequestClient from "./requestClients/averageRequestClient.ts";
+import AttributeRequestClient from "./requestClients/attributeRequestClient.ts";
 import AverageRequestClient from "./requestClients/averageRequestClient.ts";
 import CorrelationRequestClient from "./requestClients/correlationRequestClient.ts";
 import InsightRequestClient from "./requestClients/insightRequestClient.ts";
