@@ -11,5 +11,8 @@
       "indentWidth": 3,
       "semiColons": true,
       "lineWidth": 120
+   },
+   "imports": {
+      "@deno/dnt": "jsr:@deno/dnt@^0.41.3"
    }
 }
