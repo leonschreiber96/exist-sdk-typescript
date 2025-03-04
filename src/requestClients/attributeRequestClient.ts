@@ -25,6 +25,16 @@ import {
    createAttributeRequest,
    CreateTemplatedAttributeParams,
 } from "../endpoints/attributes/postCreateAttributeRequest.ts";
+import {
+   updateAttributeRequest,
+   UpdateAttributesResponse,
+   UpdateAttributeValueParam,
+} from "../endpoints/attributes/postUpdateAttribute.ts";
+import {
+   incrementAttributeRequest,
+   IncrementAttributesResponse,
+   IncrementAttributeValueParam,
+} from "../endpoints/attributes/postIncrementUpdate.ts";
 
 export default class AttributeRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -132,5 +142,43 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
    public async createNew(parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[]) {
       const request = createAttributeRequest(this.baseUrl, parameters);
       return await this.authAndFetch<AquireAttributesResponse>(request);
+   }
+
+   /**
+    * This endpoint allows services to update attribute data for the authenticated user in batches of up to 35 updates in one call. This may include, for example, 35 days of data for one attribute, or one day's values across 35 attributes. Batching updates is strongly encouraged to avoid multiple calls to the API.
+
+      Data is stored on a single day granularity, so each update contains `name`, `date`, and `value`. Make sure the date is local to the user — though you do not have to worry about timezones directly, if you are using your local time instead of the user's local time, you may be a day ahead or behind!
+
+      Valid values are described by the attribute's `value_type` and `value_type_description` fields. However, values are only validated broadly by type and so care must be taken to send correct data. Do not rely on Exist to validate your values beyond enforcing the correct type. This endpoint accepts total values for attributes and overwrites the previous value with the (validated) value you send. Non-null values cannot be set back to null, to prevent accidental data loss.
+
+      Check value types for each attribute in [list of supported attributes](https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
+    *
+    * @param [parameters] List of attributes to update.
+    * @returns A list of successfully updated attributes and any errors that occurred (incl. name of the attribute for which they occurred).
+    */
+   public async updateValues<T>(...parameters: UpdateAttributeValueParam<T>[]) {
+      const request = updateAttributeRequest<T>(this.baseUrl, ...parameters);
+      return await this.authAndFetch<UpdateAttributesResponse>(request);
+   }
+
+   /**
+    * While the update endpoint requires total values to be sent for a day, the increment endpoint allows sending deltas, or the change in value to be applied to the existing value.
+    * For example, to set a value `fridge_opens`, a count of how many times the refrigerator door is opened for a day, the update endpoint requires storing the total each day and sending this new total each time the door is opened.
+    * In contrast, the increment endpoint is happy to accept a `1` value for `fridge_opens`, removing the need for the client to remember the current state.
+
+      The attributes must already exist and be owned by your service.
+
+      Valid values are described by the attribute's `value_type` and `value_type_description` fields. However, values are only validated broadly by type and so care must be taken to send correct data.
+      Do not rely on Exist to validate your values beyond enforcing the correct type.
+      **This endpoint will not allow incrementing string, scale, or time of day attributes.**
+
+      Check value types for each attribute in [list of supported attributes](https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
+
+      @param [parameters] List of attributes to increment.
+      @returns A list of successfully incremented attributes and any errors that occurred (incl. name of the attribute for which they occurred
+    */
+   public async incrementValues(...parameters: IncrementAttributeValueParam[]) {
+      const request = incrementAttributeRequest(this.baseUrl, ...parameters);
+      return await this.authAndFetch<IncrementAttributesResponse>(request);
    }
 }
