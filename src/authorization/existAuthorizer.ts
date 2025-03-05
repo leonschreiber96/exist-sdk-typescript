@@ -23,7 +23,7 @@ export default class ExistAuthorizer {
       this.clientSecret = clientSecret;
    }
 
-   public authorizeRequest(request: Request) {
+   public authorizeRequest(request: Request): void {
       request.headers.set("Authorization", `Bearer ${this.oAuthToken}`);
    }
 
@@ -31,7 +31,7 @@ export default class ExistAuthorizer {
     * Use the provided authorization file for authorization.
     * @param filePath The path to the authorization file to use for authorization.
     */
-   public useAuthorizationFile(filePath: string) {
+   public useAuthorizationFile(filePath: string): void {
       const file = Deno.readTextFileSync(filePath);
 
       const data = JSON.parse(file) as OAuthTokenResponse;
@@ -52,7 +52,7 @@ export default class ExistAuthorizer {
     * @param oAuthToken The OAuth token to use for authorization.
     * @param refreshToken The refresh token to use when the OAuth token expires.
     */
-   public useTokens(oAuthToken: string, refreshToken: string) {
+   public useTokens(oAuthToken: string, refreshToken: string): void {
       this.oAuthToken = oAuthToken;
       this.refreshToken = refreshToken;
    }
@@ -67,7 +67,7 @@ export default class ExistAuthorizer {
       scope: Scope | Scope[],
       redirectUri: string,
       callback?: (grant: OAuthTokenResponse) => void,
-   ) {
+   ): Promise<void> {
       const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
       const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri) as OAuthTokenResponse;
 
@@ -87,7 +87,7 @@ export default class ExistAuthorizer {
     * Refresh the OAuth token using the refresh token. This will update the current OAuth token, refresh token, and expiration time.
     * Don't forget to save the new tokens to a file!
     */
-   public async refreshOAuthToken() {
+   public async refreshOAuthToken(): Promise<void> {
       const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
 
       const response = await fetch(oAuthUrl, {
@@ -112,7 +112,7 @@ export default class ExistAuthorizer {
     * Dump the current authorization data to a file.
     * @param filePath The path to the file to dump the authorization data to.
     */
-   public dumpAuthorizationToFile(filePath: string) {
+   public dumpAuthorizationToFile(filePath: string): void {
       if (!this.oAuthToken || !this.refreshToken || !this.scope || !this.expiresIn) {
          throw new Error("Missing authorization data to dump to file.");
       }

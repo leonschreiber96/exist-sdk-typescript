@@ -1,4 +1,4 @@
-import { AttributeValueType } from "./attributeValueType.ts";
+import type { AttributeValueType } from "./attributeValueType.ts";
 
 /**
  * Insights are interesting events found within the user's data (see https://developer.exist.io/reference/object_types/#insights).

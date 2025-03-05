@@ -26,7 +26,7 @@ export type UpdateAttributesResponse = {
 export function updateAttributeRequest<T>(
    baseUrl: string,
    ...parameters: UpdateAttributeValueParam<T>[]
-) {
+): Request {
    const url = new URL(`${baseUrl}/attributes/update/`);
 
    return new Request(url.toString(), {

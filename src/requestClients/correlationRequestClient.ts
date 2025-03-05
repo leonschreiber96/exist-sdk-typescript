@@ -1,9 +1,12 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
-import ExistAuthorizer from "../authorization/existAuthorizer.ts";
+import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { getCorrelationRequest } from "../endpoints/correlations/getCorrelationRequest.ts";
-import { GetCorrelationsParams, getCorrelationsRequest } from "../endpoints/correlations/getCorrelationsRequest.ts";
-import { Correlation } from "../model/correlation.ts";
-import PaginatedResponse from "../model/paginatedResponse.ts";
+import {
+   type GetCorrelationsParams,
+   getCorrelationsRequest,
+} from "../endpoints/correlations/getCorrelationsRequest.ts";
+import type { Correlation } from "../model/correlation.ts";
+import type PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class CorrelationRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -17,9 +20,15 @@ export default class CorrelationRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing all correlations as `Correlation` objects.
     */
-   public async getMany(parameters?: GetCorrelationsParams) {
+   public async getMany(parameters?: GetCorrelationsParams): Promise<PaginatedResponse<Correlation>> {
       const request = getCorrelationsRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<Correlation>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Correlation>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get correlations: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Correlation>;
    }
 
    /**
@@ -30,8 +39,14 @@ export default class CorrelationRequestClient extends AuthorizedRequestClient {
     * @param attribute2 - The name of the second attribute to compare.
     * @returns The correlation between the two attributes as a `Correlation` object.
     */
-   public async getSingle(attribute1: string, attribute2: string) {
+   public async getSingle(attribute1: string, attribute2: string): Promise<Correlation> {
       const request = getCorrelationRequest(this.baseUrl, [attribute1, attribute2]);
-      return await this.authAndFetch<Correlation>(request);
+      const response = await this.authAndFetch<Correlation>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get correlation: ${response.statusCode}`);
+      }
+
+      return response as Correlation;
    }
 }

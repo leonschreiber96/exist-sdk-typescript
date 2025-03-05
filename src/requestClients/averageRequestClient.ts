@@ -1,8 +1,8 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
-import ExistAuthorizer from "../authorization/existAuthorizer.ts";
-import { GetAveragesParams, getAveragesRequest } from "../endpoints/averages/getAveragesRequest.ts";
-import { AttributeAverage } from "../model/attributeAverage.ts";
-import PaginatedResponse from "../model/paginatedResponse.ts";
+import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
+import { type GetAveragesParams, getAveragesRequest } from "../endpoints/averages/getAveragesRequest.ts";
+import type { AttributeAverage } from "../model/attributeAverage.ts";
+import type PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class AverageRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -17,8 +17,14 @@ export default class AverageRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing the most recent average values for each attribute.
     */
-   public async getMany(parameters?: GetAveragesParams) {
+   public async getMany(parameters?: GetAveragesParams): Promise<PaginatedResponse<AttributeAverage>> {
       const request = getAveragesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get averages: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<AttributeAverage>;
    }
 }

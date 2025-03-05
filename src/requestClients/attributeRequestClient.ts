@@ -1,39 +1,39 @@
-import ExistAuthorizer from "../authorization/existAuthorizer.ts";
-import { Attribute } from "../model/attribute.ts";
-import PaginatedResponse from "../model/paginatedResponse.ts";
-import { GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
+import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
+import type { Attribute } from "../model/attribute.ts";
+import type PaginatedResponse from "../model/paginatedResponse.ts";
+import { type GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import { getAttributesWithValuesRequest } from "../endpoints/attributes/getAttributesWithValuesRequest.ts";
 import {
-   GetAttributeTemplatesParams,
+   type GetAttributeTemplatesParams,
    getAttributeTemplatesRequest,
 } from "../endpoints/attributes/getAttributeTemplatesRequest.ts";
-import { GetAttributesParams, getAttributesRequest } from "../endpoints/attributes/getAttributesRequest.ts";
-import { AttributeTemplate } from "../model/attributeTemplate.ts";
+import { type GetAttributesParams, getAttributesRequest } from "../endpoints/attributes/getAttributesRequest.ts";
+import type { AttributeTemplate } from "../model/attributeTemplate.ts";
 import {
-   AcquireAttributeByNameParam,
+   type AcquireAttributeByNameParam,
    aquireAttributesRequest,
-   AquireAttributesResponse,
-   AquireAttributeTemplateParam,
+   type AquireAttributesResponse,
+   type AquireAttributeTemplateParam,
 } from "../endpoints/attributes/postAquireAttributesRequest.ts";
 import {
    releaseAttributesRequest,
-   ReleaseAttributesResponse,
+   type ReleaseAttributesResponse,
 } from "../endpoints/attributes/postReleaseAttributesRequest.ts";
 import {
-   CreateAttributeByNameParams,
+   type CreateAttributeByNameParams,
    createAttributeRequest,
-   CreateTemplatedAttributeParams,
+   type CreateTemplatedAttributeParams,
 } from "../endpoints/attributes/postCreateAttributeRequest.ts";
 import {
    updateAttributeRequest,
-   UpdateAttributesResponse,
-   UpdateAttributeValueParam,
+   type UpdateAttributesResponse,
+   type UpdateAttributeValueParam,
 } from "../endpoints/attributes/postUpdateAttribute.ts";
 import {
    incrementAttributeRequest,
-   IncrementAttributesResponse,
-   IncrementAttributeValueParam,
+   type IncrementAttributesResponse,
+   type IncrementAttributeValueParam,
 } from "../endpoints/attributes/postIncrementUpdate.ts";
 
 export default class AttributeRequestClient extends AuthorizedRequestClient {
@@ -47,9 +47,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A paginated response containing all available attribute templates.
     */
-   public async getTemplates(parameters?: GetAttributeTemplatesParams) {
+   public async getTemplates(parameters?: GetAttributeTemplatesParams): Promise<PaginatedResponse<AttributeTemplate>> {
       const request = getAttributeTemplatesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<AttributeTemplate>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<AttributeTemplate>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get attribute templates: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<AttributeTemplate>;
    }
 
    /**
@@ -58,9 +64,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A paginated response containing the user's attributes.
     */
-   public async getMany(parameters?: GetAttributesParams) {
+   public async getMany(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get attributes: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Attribute>;
    }
 
    /**
@@ -70,9 +82,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @returns A paginated response of attribute objects belonging to this user.
     * `available_services` shows the services a user has connected which have indicated they can provide data for this attribute.
     */
-   public async getManyWithValues(parameters?: GetAttributesParams) {
+   public async getManyWithValues(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesWithValuesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get attributes with values: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Attribute>;
    }
 
    /**
@@ -81,9 +99,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @param [parameters] - *Optional* The query parameters to include in the request.
     * @returns A paginated response containing all attributes owned by the user.
     */
-   public async getOwned(parameters?: GetAttributesParams) {
+   public async getOwned(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get owned attributes: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Attribute>;
    }
 
    /**
@@ -93,9 +117,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A paginated response containing all values for the specified attribute.
     */
-   public async getSingle(attribute: string, parameters?: GetAttributeParams) {
+   public async getSingle(attribute: string, parameters?: GetAttributeParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributeRequest(this.baseUrl, attribute, parameters);
-      return await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get attribute: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Attribute>;
    }
 
    /**
@@ -108,9 +138,17 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @param [parameters] - List of attributes to acquire with [optional parameters](https://developer.exist.io/reference/attribute_ownership/#parameters).
     * @returns A list of successfully acquired attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async acquire(parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[]) {
+   public async acquire(
+      parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
+   ): Promise<AquireAttributesResponse> {
       const request = aquireAttributesRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<AquireAttributesResponse>(request);
+      const response = await this.authAndFetch<AquireAttributesResponse>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to acquire attributes: ${response.statusCode}`);
+      }
+
+      return response as AquireAttributesResponse;
    }
 
    /**
@@ -121,9 +159,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @param attributes - List of attributes to release.
     * @returns A list of successfully released attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async release(...attributes: string[]) {
+   public async release(...attributes: string[]): Promise<ReleaseAttributesResponse> {
       const request = releaseAttributesRequest(this.baseUrl, ...attributes);
-      return await this.authAndFetch<ReleaseAttributesResponse>(request);
+      const response = await this.authAndFetch<ReleaseAttributesResponse>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to release attributes: ${response.statusCode}`);
+      }
+
+      return response as ReleaseAttributesResponse;
    }
 
    /**
@@ -139,9 +183,17 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A list of successfully created attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async createNew(parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[]) {
+   public async createNew(
+      parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
+   ): Promise<AquireAttributesResponse> {
       const request = createAttributeRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<AquireAttributesResponse>(request);
+      const response = await this.authAndFetch<AquireAttributesResponse>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to create attributes: ${response.statusCode}`);
+      }
+
+      return response as AquireAttributesResponse;
    }
 
    /**
@@ -156,9 +208,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @param [parameters] List of attributes to update.
     * @returns A list of successfully updated attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async updateValues<T>(...parameters: UpdateAttributeValueParam<T>[]) {
+   public async updateValues<T>(...parameters: UpdateAttributeValueParam<T>[]): Promise<UpdateAttributesResponse> {
       const request = updateAttributeRequest<T>(this.baseUrl, ...parameters);
-      return await this.authAndFetch<UpdateAttributesResponse>(request);
+      const response = await this.authAndFetch<UpdateAttributesResponse>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to update attributes: ${response.statusCode}`);
+      }
+
+      return response as UpdateAttributesResponse;
    }
 
    /**
@@ -177,8 +235,14 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       @param [parameters] List of attributes to increment.
       @returns A list of successfully incremented attributes and any errors that occurred (incl. name of the attribute for which they occurred
     */
-   public async incrementValues(...parameters: IncrementAttributeValueParam[]) {
+   public async incrementValues(...parameters: IncrementAttributeValueParam[]): Promise<IncrementAttributesResponse> {
       const request = incrementAttributeRequest(this.baseUrl, ...parameters);
-      return await this.authAndFetch<IncrementAttributesResponse>(request);
+      const response = await this.authAndFetch<IncrementAttributesResponse>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to increment attributes: ${response.statusCode}`);
+      }
+
+      return response as IncrementAttributesResponse;
    }
 }

@@ -1,8 +1,8 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
-import ExistAuthorizer from "../authorization/existAuthorizer.ts";
-import { GetInsightsParams, getInsightsRequest } from "../endpoints/insights/getInsightsRequest.ts";
-import { Insight } from "../model/insight.ts";
-import PaginatedResponse from "../model/paginatedResponse.ts";
+import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
+import { type GetInsightsParams, getInsightsRequest } from "../endpoints/insights/getInsightsRequest.ts";
+import type { Insight } from "../model/insight.ts";
+import type PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class InsightRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -15,8 +15,14 @@ export default class InsightRequestClient extends AuthorizedRequestClient {
     * @param [parameters] *Optional* The query parameters to include in the request.
     * @returns A paginated response containing the insights for the authenticated user as `Insight` objects.
     */
-   public async getMany(parameters?: GetInsightsParams) {
+   public async getMany(parameters?: GetInsightsParams): Promise<PaginatedResponse<Insight>> {
       const request = getInsightsRequest(this.baseUrl, parameters);
-      return await this.authAndFetch<PaginatedResponse<Insight>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<Insight>>(request);
+
+      if (response.statusCode !== 200) {
+         throw new Error(`Failed to get insights: ${response.statusCode}`);
+      }
+
+      return response as PaginatedResponse<Insight>;
    }
 }

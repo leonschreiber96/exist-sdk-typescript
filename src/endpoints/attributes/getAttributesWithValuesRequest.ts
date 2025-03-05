@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetAttributesWithValuesParams = PaginatedRequestParams & {
    /** *Optional* Integer defining how many day values to include in values, max `31`, default `1`. */

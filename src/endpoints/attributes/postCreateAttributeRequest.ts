@@ -1,6 +1,6 @@
-import { Attribute } from "../../model/attribute.ts";
-import { AttributeTemplateId } from "../../model/attributeTemplate.ts";
-import { AttributeValueType } from "../../model/attributeValueType.ts";
+import type { Attribute } from "../../model/attribute.ts";
+import type { AttributeTemplateId } from "../../model/attributeTemplate.ts";
+import type { AttributeValueType } from "../../model/attributeValueType.ts";
 
 type CreateAttributeParams = {
    /** *Optional* boolean defining if the attribute is manually tracked, defaulting to `true` */
@@ -34,7 +34,7 @@ export type CreatettributesResponse = {
 export function createAttributeRequest(
    baseUrl: string,
    parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
-) {
+): Request {
    const url = new URL(`${baseUrl}/attributes/`);
 
    return new Request(url.toString(), {

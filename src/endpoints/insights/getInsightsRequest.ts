@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetInsightsParams = PaginatedRequestParams & {
    /** *Optional* Oldest date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
@@ -18,7 +18,7 @@ export type GetInsightsParams = PaginatedRequestParams & {
  *
  * @returns A request object with a GET request for the `/insights/` endpoint and the specified query parameters.
  */
-export function getInsightsRequest(baseUrl: string, parameters?: GetInsightsParams) {
+export function getInsightsRequest(baseUrl: string, parameters?: GetInsightsParams): Request {
    const url = new URL(`${baseUrl}/insights/`);
 
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());

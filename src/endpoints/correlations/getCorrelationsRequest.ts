@@ -1,4 +1,4 @@
-import { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
 export type GetCorrelationsParams = PaginatedRequestParams & {
    /** *Optional* Boolean flag, set to `true` to return only correlations above a certain relationship strength. */
@@ -18,7 +18,7 @@ export type GetCorrelationsParams = PaginatedRequestParams & {
  *
  * @returns A request object with a GET request for the `/correlations/` endpoint and the specified query parameters.
  */
-export function getCorrelationsRequest(baseUrl: string, parameters?: GetCorrelationsParams) {
+export function getCorrelationsRequest(baseUrl: string, parameters?: GetCorrelationsParams): Request {
    const url = new URL(`${baseUrl}/correlations/`);
 
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());

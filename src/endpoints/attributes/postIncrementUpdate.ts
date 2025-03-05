@@ -26,7 +26,7 @@ export type IncrementAttributesResponse = {
 export function incrementAttributeRequest(
    baseUrl: string,
    ...parameters: IncrementAttributeValueParam[]
-) {
+): Request {
    const url = new URL(`${baseUrl}/attributes/increment/`);
 
    return new Request(url.toString(), {

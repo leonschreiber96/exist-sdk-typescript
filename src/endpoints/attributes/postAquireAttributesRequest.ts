@@ -1,4 +1,4 @@
-import { AttributeTemplateId } from "../../model/attributeTemplate.ts";
+import type { AttributeTemplateId } from "../../model/attributeTemplate.ts";
 
 type AcquireAttributeParam = {
    /** *Optional* Boolean flag to set this attribute as manually updated or not */
@@ -26,7 +26,7 @@ export type AquireAttributesResponse = {
 export function aquireAttributesRequest(
    baseUrl: string,
    parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
-) {
+): Request {
    const url = new URL(`${baseUrl}/attributes/acquire/`);
 
    return new Request(url.toString(), {
