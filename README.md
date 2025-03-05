@@ -123,4 +123,4 @@ Contributions are welcome! To contribute:
 5. Open a Pull Request.
 
 ## **License**
-This project is licensed under the **MIT License**.
+This project is licensed under the **GNU GPL-3.0 license**.
