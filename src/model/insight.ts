@@ -1,4 +1,4 @@
-import AttributeValueType from "./attributeValueType.ts";
+import { AttributeValueType } from "./attributeValueType.ts";
 
 /**
  * Insights are interesting events found within the user's data (see https://developer.exist.io/reference/object_types/#insights).
@@ -9,7 +9,7 @@ import AttributeValueType from "./attributeValueType.ts";
  *
  * HTML and text output is provided.
  */
-export default interface Insight {
+export interface Insight {
    created: string;
    target_date: string;
    type: {

@@ -31,6 +31,9 @@ export function updateAttributeRequest<T>(
 
    return new Request(url.toString(), {
       method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
       body: JSON.stringify(parameters),
    });
 }

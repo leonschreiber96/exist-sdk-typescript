@@ -12,5 +12,11 @@ export type ReleaseAttributesResponse = {
  */
 export function releaseAttributesRequest(baseUrl: string, ...attributes: string[]): Request {
    const url = `${baseUrl}/attributes/release/`;
-   return new Request(url, { method: "POST", body: JSON.stringify(attributes) });
+   return new Request(url, {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(attributes),
+   });
 }

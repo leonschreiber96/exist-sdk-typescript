@@ -153,3 +153,5 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node,deno
 test.ts
+
+npm

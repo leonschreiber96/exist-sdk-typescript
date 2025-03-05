@@ -2,7 +2,7 @@ import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts
 import ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { getCorrelationRequest } from "../endpoints/correlations/getCorrelationRequest.ts";
 import { GetCorrelationsParams, getCorrelationsRequest } from "../endpoints/correlations/getCorrelationsRequest.ts";
-import Correlation from "../model/correlation.ts";
+import { Correlation } from "../model/correlation.ts";
 import PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class CorrelationRequestClient extends AuthorizedRequestClient {

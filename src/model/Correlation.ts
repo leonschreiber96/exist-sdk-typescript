@@ -13,7 +13,7 @@
  *
  * Correlations are generated weekly on Sundays.
  */
-export default interface Correlation {
+export interface Correlation {
    date: string;
    period: number;
    offset: number;

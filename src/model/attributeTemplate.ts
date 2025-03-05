@@ -1,4 +1,4 @@
-import type AttributeValueType from "./attributeValueType.ts";
+import type { AttributeValueType } from "./attributeValueType.ts";
 
 /**
  * All the "official" attributes we currently support (see https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
@@ -129,4 +129,4 @@ type AttributeTemplate = {
    value_type_description: string;
 };
 
-export type { AttributeTemplate, AttributeTemplateId };
+export { type AttributeTemplate, AttributeTemplateId };

@@ -1,4 +1,5 @@
 import type { Scope } from "../model/scope.ts";
+import http from "node:http";
 
 type AuthorizationFile = {
    oAuthToken: string;
@@ -55,10 +56,7 @@ export default class ExistAuthorizer {
    }
 
    public async useOAuthFlow(scope: Scope | Scope[], redirectUri: string) {
-      const authorizationGrant = await this.getOAuthAuthorizationGrant(
-         scope,
-         redirectUri,
-      );
+      const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
       const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri);
 
       this.oAuthToken = tokens.access_token;
@@ -86,9 +84,7 @@ export default class ExistAuthorizer {
             }),
          }).then((response) => {
             if (!response.ok) {
-               reject(
-                  `Failed to get OAuth tokens: ${response.status} → ${response.statusText}`,
-               );
+               reject(`Failed to get OAuth tokens: ${response.status} → ${response.statusText}`);
             }
 
             resolve(response.json() as Promise<OAuthTokenResponse>);
@@ -107,46 +103,36 @@ export default class ExistAuthorizer {
          scope: typeof scope === "string" ? scope : scope.join("+"),
       };
 
-      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${new URLSearchParams(
-         params,
-      )}`;
+      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${new URLSearchParams(params)}`;
       const redirectUrlObject = new URL(redirectUri);
 
-      if (
-         redirectUrlObject.hostname !== "localhost" &&
-         redirectUrlObject.hostname !== "127.0.0.1"
-      ) {
-         throw new Error(
-            "Redirect URI must be localhost or 127.0.0.1 for OAuth flow.",
-         );
+      if (!["localhost", "127.0.0.1"].includes(redirectUrlObject.hostname)) {
+         throw new Error("Redirect URI must be localhost or 127.0.0.1 for OAuth flow.");
       }
 
       return new Promise((resolve, reject) => {
          console.log(`Please visit this URL to authorize Exist: ${oAuthUrl}`);
 
-         const server = Deno.serve({
-            port: +redirectUrlObject.port,
-            onListen() {
-               console.log("Waiting for authorization via oAuth workflow...");
-            },
-         }, (req) => {
-            const url = new URL(req.url, `http://localhost:8000`);
+         // Replaced Deno.serve with http.createServer
+         const server = http.createServer((req, res) => {
+            const url = new URL(req.url ?? "", `http://localhost`);
             const code = url.searchParams.get("code");
+
             if (code) {
-               server.shutdown();
+               res.writeHead(200, { "Content-Type": "text/plain" });
+               res.end("Authentication successful! You can close this tab.");
+               server.close();
                resolve(code);
-               return new Response(
-                  "Authentication successful! You can close this tab.",
-                  {
-                     status: 200,
-                     headers: { "Content-Type": "text/plain" },
-                  },
-               );
             } else {
-               server.shutdown();
-               reject();
-               return new Response("Missing code.", { status: 400 });
+               res.writeHead(400, { "Content-Type": "text/plain" });
+               res.end("Missing code.");
+               server.close();
+               reject(new Error("Authorization code not found in request"));
             }
+         });
+
+         server.listen(parseInt(redirectUrlObject.port), () => {
+            console.log("Waiting for authorization via OAuth workflow...");
          });
       });
    }

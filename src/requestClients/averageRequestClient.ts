@@ -1,7 +1,7 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { GetAveragesParams, getAveragesRequest } from "../endpoints/averages/getAveragesRequest.ts";
-import AttributeAverage from "../model/attributeAverage.ts";
+import { AttributeAverage } from "../model/attributeAverage.ts";
 import PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class AverageRequestClient extends AuthorizedRequestClient {
