@@ -4,8 +4,7 @@
          "src/**/*.ts"
       ],
       "exclude": [
-         "npm/**/*.ts",
-         "src/**/*.node.ts"
+         "npm/**/*.ts"
       ]
    },
    "fmt": {
