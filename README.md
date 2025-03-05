@@ -1,163 +1,120 @@
-# Exist.io TypeScript API Wrapper
+# **Exist.io TypeScript SDK**
 
-This TypeScript API wrapper provides a convenient interface for interacting with the [Exist.io](https://exist.io/) API. Exist.io is a personal analytics platform that allows users to track and understand various aspects of their lives by integrating data from multiple services.
+A TypeScript SDK for interacting with the [Exist.io API](https://exist.io/). Exist.io is a personal analytics platform that integrates data from multiple services to help users track and understand various aspects of their lives.
 
-## Features
+## **Features**
+✔ **OAuth2 Authentication** – Handles access tokens and refresh tokens.  
+✔ **Full API Coverage** – Supports attributes, averages, correlations, insights, and user profiles.  
+✔ **Strongly Typed Models** – Uses TypeScript interfaces and enums to ensure type safety.  
 
-- **Authorization**: Manage OAuth2 authentication and authorized requests.
-- **Endpoints**: Access various Exist.io API endpoints, including attributes, averages, correlations, insights, and user profiles.
-- **Models**: Utilize TypeScript interfaces and types representing Exist's data structures.
-
-## Installation
-
-To install the package for a node.js project using `npm`, run the following command:
-```bash
+## **Installation**
+To install the package for a **Node.js** project using npm, run:
+```sh
 npm install exist-sdk-typescript
 ```
 
-## Getting Started
+## **Getting Started**
 
-### Authorization
+### **1️⃣ Authentication**
+To interact with the Exist.io API, you must authenticate using OAuth2. Follow [this guide](https://exist.io/blog/how-to-get-api-token/) to create an API client.
 
-The first step is to create a developer client for your application. Follow [this tutorial](https://exist.io/blog/how-to-get-api-token/) to find out how to do this.
-
-To interact with the Exist.io API, you'll need to be authorized via oAuth2 (i.e., you need an access token and ideally a refresh token).
-This must be done using the `ExistAuthorizer` class. The authentication tokens can be provided in either of the following ways:
+Use the `ExistAuthorizer` class to provide authentication tokens in one of three ways:
 
 ```typescript
-const authorizer = new ExistAuthorizer(
-   "your-client-id",
-   "your-client-secret"
-);
+import { ExistAuthorizer } from "exist-sdk-typescript";
 
-// First method: provide tokens directly
+const authorizer = new ExistAuthorizer("your-client-id", "your-client-secret");
+
+// Option 1: Provide tokens directly
 authorizer.useTokens("your-access-token", "your-refresh-token");
 
-// Second method: provide a json file where the tokens are saved
-// File must look like this: 
-//    { 
-//       "oAuthToken": "...", 
-//       "refreshToken": "..." 
-//    }
-authorizer.useAuthorizationFile("path/to/file.json");
+// Option 2: Load tokens from a JSON file
+authorizer.useAuthorizationFile("path/to/tokens.json");
 
-// Third method: go through the oAuth flow to obtain the token via user confirmation from the server
-authorizer.useOAuthFlow(ExistModel.ReadScope.FINANCE, "your-redirect-uri");
+// Option 3: Use OAuth2 flow to obtain a token dynamically
+authorizer.useOAuthFlow(["mood_read", "activity_read"], "http://localhost:8000/callback");
 ```
 
-### 2. Initialize the ExistClient
+#### **Authentication JSON File**
+If you're using **Option 2** (loading tokens from a JSON file), the JSON file should look like this:
 
-Use the `ExistClient` class to interact with the API. Initialize it with your access token:
-
-```typescript
-import { ExistClient } from 'exist-api-wrapper';
-
-const client = new ExistClient('YOUR_ACCESS_TOKEN');
+```json
+{
+  "oAuthToken": "your-access-token",
+  "refreshToken": "your-refresh-token"
+}
 ```
 
-### 3. Fetch User Profile
+The `oAuthToken` is the access token, and the `refreshToken` is the refresh token that can be used to obtain new access tokens when they expire.
 
-Retrieve your user profile data:
+#### **OAuth2 Flow**
+For **Option 3**, the `useOAuthFlow` method requires two arguments:
 
+1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `mood_read`, `activity_read`, `steps_write`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
+
+2. **Redirect URI**: This must be a free port on localhost (e.g., `http://localhost:8000/callback`). Your client will listen for the OAuth response from Exist on this port and automatically extract the access and refresh tokens. After completing the OAuth flow, be sure to **save the tokens** that the client displays.
+
+Here is an example:
 ```typescript
-const profile = await client.profile.getUserProfile();
+authorizer.useOAuthFlow(
+  ["mood_read", "activity_read", "steps_write"], // Scopes
+  "http://localhost:8000/callback" // Redirect URI
+);
+```
+
+### **2️⃣ Initialize the ExistClient**
+Once authenticated, initialize `ExistClient` to make API calls:
+```typescript
+import { ExistClient } from "exist-sdk-typescript";
+
+const client = new ExistClient(authorizer);
+```
+
+### **3️⃣ Fetch Data from Exist.io**
+#### **📌 Get User Profile**
+```typescript
+const profile = await client.users.getUserProfile();
 console.log(profile);
 ```
 
-### 4. Retrieve Attributes
-
-Fetch a list of your attributes:
-
+#### **📌 Get Tracked Attributes**
 ```typescript
 const attributes = await client.attributes.getAttributes();
 console.log(attributes);
 ```
 
-### 5. Update an Attribute
-
-Update the value of an attribute:
-
+#### **📌 Update an Attribute**
 ```typescript
-await client.attributes.updateAttribute('steps', 10000);
+await client.attributes.updateValues([{ name: "steps", value: 5000, date: "2025-03-05" }]);
 ```
 
-## Project Structure
+## **API Reference**
+The SDK provides structured access to the Exist.io API through these modules:
 
-The project is organized as follows:
+| Module | Description |
+|--------|-------------|
+| `attributes` | Manage tracked attributes (e.g., mood, steps, sleep). |
+| `averages` | Get attribute averages over time. |
+| `users` | Access user profile data. |
+| `correlations` | Find correlations between tracked attributes. |
+| `insights` | Retrieve generated insights. |
 
-```
-.
-├── build_npm.ts
-├── deno.json
-├── deno.lock
-├── LICENSE
-├── mod.ts
-├── README.md
-└── src
-    ├── authorization
-    │   ├── authorizedRequestClient.ts
-    │   ├── existAuthorizer.node.ts
-    │   └── existAuthorizer.ts
-    ├── endpoints
-    │   ├── attributes
-    │   │   ├── getAttributeRequest.ts
-    │   │   ├── getAttributesRequest.ts
-    │   │   ├── getAttributesWithValuesRequest.ts
-    │   │   ├── getAttributeTemplatesRequest.ts
-    │   │   ├── getOwnedAttributes.ts
-    │   │   ├── postAquireAttributesRequest.ts
-    │   │   ├── postCreateAttributeRequest.ts
-    │   │   ├── postIncrementUpdate.ts
-    │   │   ├── postReleaseAttributesRequest.ts
-    │   │   └── postUpdateAttribute.ts
-    │   ├── averages
-    │   │   └── getAveragesRequest.ts
-    │   ├── correlations
-    │   │   ├── getCorrelationRequest.ts
-    │   │   └── getCorrelationsRequest.ts
-    │   ├── insights
-    │   │   └── getInsightsRequest.ts
-    │   ├── paginatedRequestParams.ts
-    │   └── profile
-    │       └── getUserProfileRequest.ts
-    ├── existClient.ts
-    ├── model
-    │   ├── _exports.ts
-    │   ├── attribute.ts
-    │   ├── attributeAverage.ts
-    │   ├── attributeTemplate.ts
-    │   ├── attributeValueType.ts
-    │   ├── correlation.ts
-    │   ├── insight.ts
-    │   ├── paginatedResponse.ts
-    │   ├── scope.ts
-    │   └── userProfile.ts
-    └── requestClients
-        ├── _baseRequestClient.ts
-        ├── attributeRequestClient.ts
-        ├── averageRequestClient.ts
-        ├── correlationRequestClient.ts
-        ├── insightRequestClient.ts
-        └── profileRequestClient.ts
+Example:
+```typescript
+const correlations = await client.correlations.getCorrelations();
+console.log(correlations);
 ```
 
-- **`build_npm.ts`**: Script for building the npm package.
-- **`deno.json`**: Configuration file for Deno.
-- **`deno.lock`**: Lock file for Deno dependencies.
-- **`LICENSE`**: License information.
-- **`mod.ts`**: Entry point for the module.
-- **`README.md`**: Project documentation.
-- **`src/authorization`**: Authorization-related classes and functions.
-- **`src/endpoints`**: Modules corresponding to different API endpoints.
-- **`src/model`**: TypeScript interfaces and types representing Exist.io data structures.
-- **`src/requestClients`**: Clients for making API requests.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
+## **Contributing**
+Contributions are welcome! To contribute:
 1. Fork the repository.
-2. Create a new branch (`feature/your-feature`).
+2. Create a new branch (`feature/my-feature`).
 3. Commit your changes.
 4. Push to the branch.
-5. Open a Pull Request. 
+5. Open a Pull Request.
+
+## **License**
+This project is licensed under the **MIT License**.
+
+## **📌 Summary**
+This SDK provides a **fully typed, easy-to-use** interface for Exist.io, with built-in OAuth2 authentication and structured API access. 🚀
