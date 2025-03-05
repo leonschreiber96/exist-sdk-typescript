@@ -111,7 +111,7 @@ export default class ExistAuthorizer {
       }
 
       return new Promise((resolve, reject) => {
-         console.log(`Please visit this URL to authorize Exist: ${oAuthUrl}`);
+         console.log(`Please visit this URL to authorize Exist: ${oAuthUrl.replace("%2B", "+")}`);
 
          // Replaced Deno.serve with http.createServer
          const server = http.createServer((req, res) => {
