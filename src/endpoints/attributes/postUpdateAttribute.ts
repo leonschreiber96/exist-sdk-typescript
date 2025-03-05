@@ -1,3 +1,6 @@
+/**
+ * Represents the parameters for a request to update an attribute value.
+ */
 export type UpdateAttributeValueParam<T> = {
    /** The attribute name, eg. `mood_note` */
    name: string;
@@ -9,6 +12,9 @@ export type UpdateAttributeValueParam<T> = {
    value: T;
 };
 
+/**
+ * Represents the response from a request to update attribute values.
+ */
 export type UpdateAttributesResponse = {
    success: {
       name: string;
@@ -23,6 +29,13 @@ export type UpdateAttributesResponse = {
    }[];
 };
 
+/**
+ * Returns a request object with a POST request that updates attribute values.
+ * @param baseUrl - The base URL for the REST API.
+ * @param parameters - The parameters for updating the attribute values.
+ *
+ * @returns A request object with a POST request for the `/attributes/update/` endpoint and the specified parameters.
+ */
 export function updateAttributeRequest<T>(
    baseUrl: string,
    ...parameters: UpdateAttributeValueParam<T>[]

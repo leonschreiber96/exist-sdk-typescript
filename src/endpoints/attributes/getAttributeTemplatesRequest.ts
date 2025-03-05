@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of attribute templates.
+ */
 export type GetAttributeTemplatesParams = PaginatedRequestParams & {
    /** *Optional* Boolean flag, set to `true` to include attributes with a priority >= 10 */
    includeLowPriority?: boolean;

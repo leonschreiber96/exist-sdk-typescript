@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of owned attributes.
+ */
 export type GetOwnedAttributesParams = PaginatedRequestParams & {
    /** *Optional* List of groups to filter by, e.g. `['activity', 'workouts']` */
    groups?: string[];

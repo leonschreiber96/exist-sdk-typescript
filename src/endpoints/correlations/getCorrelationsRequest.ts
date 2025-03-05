@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of correlations.
+ */
 export type GetCorrelationsParams = PaginatedRequestParams & {
    /** *Optional* Boolean flag, set to `true` to return only correlations above a certain relationship strength. */
    strong?: boolean;

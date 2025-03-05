@@ -9,6 +9,10 @@ type OAuthTokenResponse = {
    scope: string;
 };
 
+/**
+ * Handles authorization with the Exist API using OAuth2.
+ * Pass an instance of this class to an Exist API client to authorize all of its requests.
+ */
 export default class ExistAuthorizer {
    private oAuthServiceUrl: string = "https://exist.io/oauth2";
    private clientId: string;
@@ -23,6 +27,10 @@ export default class ExistAuthorizer {
       this.clientSecret = clientSecret;
    }
 
+   /**
+    * Authorize the provided request with the current OAuth token.
+    * @param request The request to authorize.
+    */
    public authorizeRequest(request: Request): void {
       request.headers.set("Authorization", `Bearer ${this.oAuthToken}`);
    }

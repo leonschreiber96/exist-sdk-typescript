@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of attributes **including** values.
+ */
 export type GetAttributesWithValuesParams = PaginatedRequestParams & {
    /** *Optional* Integer defining how many day values to include in values, max `31`, default `1`. */
    days?: number;

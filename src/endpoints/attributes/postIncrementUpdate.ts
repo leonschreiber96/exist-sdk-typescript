@@ -1,3 +1,6 @@
+/**
+ * Represents the parameters for a request to increment attribute values.
+ */
 export type IncrementAttributeValueParam = {
    /** The attribute name, eg. `mood_note` */
    name: string;
@@ -9,6 +12,9 @@ export type IncrementAttributeValueParam = {
    value: number;
 };
 
+/**
+ * Represents the response from a request to increment attribute values.
+ */
 export type IncrementAttributesResponse = {
    success: {
       name: string;
@@ -23,6 +29,13 @@ export type IncrementAttributesResponse = {
    }[];
 };
 
+/**
+ * Returns a request object with a POST request that increments attribute values.
+ * @param baseUrl - The base URL for the REST API.
+ * @param parameters - The parameters for incrementing the attribute values.
+ *
+ * @returns A request object with a POST request for the `/attributes/increment/` endpoint and the specified parameters.
+ */
 export function incrementAttributeRequest(
    baseUrl: string,
    ...parameters: IncrementAttributeValueParam[]
