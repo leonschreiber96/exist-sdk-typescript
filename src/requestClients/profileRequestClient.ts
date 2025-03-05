@@ -1,7 +1,7 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { getUserProfileRequest } from "../endpoints/profile/getUserProfileRequest.ts";
-import UserProfile from "../model/userProfile.ts";
+import { UserProfile } from "../model/userProfile.ts";
 
 export default class ProfileRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {

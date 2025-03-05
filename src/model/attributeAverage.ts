@@ -5,7 +5,7 @@
  * We break down averages by day of the week but also record the overall average. As we keep historical data this allows us to plot "rolling averages" showing changes in attribute values. The data set for finding the average is always the last 60 days' data.
  *
  * **Note:** these are actually medians, but we use "average" as it's simpler to explain to users. Please also use this terminology. */
-export default interface AttributeAverage {
+export interface AttributeAverage {
    attribute: string;
    date: string;
    overall: number;

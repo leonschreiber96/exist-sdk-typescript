@@ -1,7 +1,7 @@
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { GetInsightsParams, getInsightsRequest } from "../endpoints/insights/getInsightsRequest.ts";
-import Insight from "../model/insight.ts";
+import { Insight } from "../model/insight.ts";
 import PaginatedResponse from "../model/paginatedResponse.ts";
 
 export default class InsightRequestClient extends AuthorizedRequestClient {

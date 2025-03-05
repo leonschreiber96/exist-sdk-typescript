@@ -27,4 +27,4 @@ enum AttributeValueType {
    SCALE = 8,
 }
 
-export default AttributeValueType;
+export { AttributeValueType };

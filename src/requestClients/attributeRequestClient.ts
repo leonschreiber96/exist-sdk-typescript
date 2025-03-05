@@ -1,5 +1,5 @@
 import ExistAuthorizer from "../authorization/existAuthorizer.ts";
-import Attribute from "../model/attribute.ts";
+import { Attribute } from "../model/attribute.ts";
 import PaginatedResponse from "../model/paginatedResponse.ts";
 import { GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";

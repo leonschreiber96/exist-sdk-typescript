@@ -1,5 +1,5 @@
 import type { AttributeTemplateId } from "./attributeTemplate.ts";
-import type AttributeValueType from "./attributeValueType.ts";
+import type { AttributeValueType } from "./attributeValueType.ts";
 
 /**
  * Information about an attribute, e.g. "mood", "steps", "weight". (see https://developer.exist.io/reference/object_types/#attributes).
@@ -12,7 +12,7 @@ import type AttributeValueType from "./attributeValueType.ts";
  *
  * If there is no data for a particular date, this will be reflected with a null value — you should expect to receive a list of results containing every single day, rather than days without data being omitted.
  */
-export default interface Attribute {
+export interface Attribute {
    template: AttributeTemplateId;
    /** Unique ID of the attribute. */
    name: string;

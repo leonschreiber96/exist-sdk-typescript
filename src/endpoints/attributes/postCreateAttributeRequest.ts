@@ -1,6 +1,6 @@
-import Attribute from "../../model/attribute.ts";
+import { Attribute } from "../../model/attribute.ts";
 import { AttributeTemplateId } from "../../model/attributeTemplate.ts";
-import AttributeValueType from "../../model/attributeValueType.ts";
+import { AttributeValueType } from "../../model/attributeValueType.ts";
 
 type CreateAttributeParams = {
    /** *Optional* boolean defining if the attribute is manually tracked, defaulting to `true` */
@@ -39,6 +39,9 @@ export function createAttributeRequest(
 
    return new Request(url.toString(), {
       method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
       body: JSON.stringify(parameters),
    });
 }
