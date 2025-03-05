@@ -50,14 +50,14 @@ The `oAuthToken` is the access token, and the `refreshToken` is the refresh toke
 #### **OAuth2 Flow**
 For **Option 3**, the `useOAuthFlow` method requires two arguments:
 
-1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `mood_read`, `activity_read`, `steps_write`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
+1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `mood_read`, `activity_read`, `activity_write`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
 
 2. **Redirect URI**: This must be a free port on localhost (e.g., `http://localhost:8000/callback`). Your client will listen for the OAuth response from Exist on this port and automatically extract the access and refresh tokens. After completing the OAuth flow, be sure to **save the tokens** that the client displays.
 
 Here is an example:
 ```typescript
 authorizer.useOAuthFlow(
-  ["mood_read", "activity_read", "steps_write"], // Scopes
+  ["mood_read", "activity_read", "activity_write"], // Scopes
   "http://localhost:8000/callback" // Redirect URI
 );
 ```
