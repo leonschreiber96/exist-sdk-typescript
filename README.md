@@ -13,7 +13,23 @@ To install the package for a **Node.js** project using npm, run:
 npm install exist-sdk-typescript
 ```
 
+To install in a **Deno** project,run:
+```sh
+deno add jsr:@leonschreiber96/exist-sdk-typescript
+```
+
 ## **Getting Started**
+
+### **0️⃣ Import the SDK**
+Using NPM:
+```typescript
+import { ExistAuthorizer, ExistClient } from "exist-sdk-typescript";
+```
+
+Using Deno:
+```typescript
+import { ExistClient, ExistAuthorizer } from "@leonschreiber96/exist-sdk-typescript";
+```
 
 ### **1️⃣ Authentication**
 To interact with the Exist.io API, you must authenticate using OAuth2. Follow [this guide](https://exist.io/blog/how-to-get-api-token/) to create an API client.
@@ -21,8 +37,6 @@ To interact with the Exist.io API, you must authenticate using OAuth2. Follow [t
 Use the `ExistAuthorizer` class to provide authentication tokens in one of three ways:
 
 ```typescript
-import { ExistAuthorizer } from "exist-sdk-typescript";
-
 const authorizer = new ExistAuthorizer("your-client-id", "your-client-secret");
 
 // Option 1: Provide tokens directly
@@ -32,7 +46,7 @@ authorizer.useTokens("your-access-token", "your-refresh-token");
 authorizer.useAuthorizationFile("path/to/tokens.json");
 
 // Option 3: Use OAuth2 flow to obtain a token dynamically
-authorizer.useOAuthFlow(["mood_read", "activity_read"], "http://localhost:8000/callback");
+authorizer.useOAuthFlow(["mood_read", "activity_read"], "http://localhost:8000");
 ```
 
 #### **Authentication JSON File**
@@ -50,7 +64,7 @@ The `oAuthToken` is the access token, and the `refreshToken` is the refresh toke
 #### **OAuth2 Flow**
 For **Option 3**, the `useOAuthFlow` method requires two arguments:
 
-1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `mood_read`, `activity_read`, `activity_write`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
+1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `ReadScope.MOOD`, `WriteScope.ACTIVITY`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
 
 2. **Redirect URI**: This must be a free port on localhost (e.g., `http://localhost:8000/`) and **must match the redirect uri you entered when creating your developer client**. Your client will listen for the OAuth response from Exist on this port and automatically extract the access and refresh tokens. After completing the OAuth flow, be sure to **save the tokens** that the client displays.
 
@@ -68,8 +82,6 @@ authorizer.useOAuthFlow(
 ### **2️⃣ Initialize the ExistClient**
 Once authenticated, initialize `ExistClient` to make API calls:
 ```typescript
-import { ExistClient } from "exist-sdk-typescript";
-
 const client = new ExistClient(authorizer);
 ```
 
