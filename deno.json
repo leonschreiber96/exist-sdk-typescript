@@ -2,6 +2,10 @@
    "lint": {
       "include": [
          "src/**/*.ts"
+      ],
+      "exclude": [
+         "npm/**/*.ts",
+         "src/**/*.node.ts"
       ]
    },
    "fmt": {

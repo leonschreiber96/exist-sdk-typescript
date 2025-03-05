@@ -1,5 +1,6 @@
-import type { Scope } from "../model/scope.ts";
-import http from "node:http";
+import fs from "fs";
+import http from "http";
+import type { Scope } from "../model/scope.js";
 
 type AuthorizationFile = {
    oAuthToken: string;
@@ -37,7 +38,7 @@ export default class ExistAuthorizer {
    }
 
    public useAuthorizationFile(filePath: string) {
-      const file = Deno.readTextFileSync(filePath);
+      const file = fs.readFileSync(filePath, "utf-8");
 
       const data = JSON.parse(file) as AuthorizationFile;
       if (!data.oAuthToken) {
@@ -56,7 +57,10 @@ export default class ExistAuthorizer {
    }
 
    public async useOAuthFlow(scope: Scope | Scope[], redirectUri: string) {
-      const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
+      const authorizationGrant = await this.getOAuthAuthorizationGrant(
+         scope,
+         redirectUri,
+      );
       const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri);
 
       this.oAuthToken = tokens.access_token;
@@ -65,55 +69,59 @@ export default class ExistAuthorizer {
       console.log("Authorization successful!", tokens);
    }
 
-   private getOAuthTokens(
+   private async getOAuthTokens(
       authorizationGrant: string,
       redirectUri: string,
    ): Promise<OAuthTokenResponse> {
-      return new Promise((resolve, reject) => {
-         const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
+      const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
 
-         fetch(oAuthUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-               grant_type: "authorization_code",
-               code: authorizationGrant,
-               client_id: this.clientId,
-               client_secret: this.clientSecret,
-               redirect_uri: redirectUri,
-            }),
-         }).then((response) => {
-            if (!response.ok) {
-               reject(`Failed to get OAuth tokens: ${response.status} → ${response.statusText}`);
-            }
-
-            resolve(response.json() as Promise<OAuthTokenResponse>);
-         });
+      const response = await fetch(oAuthUrl, {
+         method: "POST",
+         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+         body: new URLSearchParams({
+            grant_type: "authorization_code",
+            code: authorizationGrant,
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            redirect_uri: redirectUri,
+         }).toString(),
       });
+
+      if (!response.ok) {
+         throw new Error(
+            `Failed to get OAuth tokens: ${response.status} → ${response.statusText}`,
+         );
+      }
+
+      return response.json() as Promise<OAuthTokenResponse>;
    }
 
-   private getOAuthAuthorizationGrant(
+   private async getOAuthAuthorizationGrant(
       scope: Scope | Scope[],
       redirectUri: string,
    ): Promise<string> {
-      const params = {
+      const params = new URLSearchParams({
          client_id: this.clientId,
          response_type: "code",
          redirect_uri: redirectUri,
-         scope: typeof scope === "string" ? scope : scope.join("+"),
-      };
+         scope: Array.isArray(scope) ? scope.join("+") : scope,
+      });
 
-      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${new URLSearchParams(params)}`;
+      const oAuthUrl = `${this.oAuthServiceUrl}/authorize?${params}`;
       const redirectUrlObject = new URL(redirectUri);
 
-      if (!["localhost", "127.0.0.1"].includes(redirectUrlObject.hostname)) {
-         throw new Error("Redirect URI must be localhost or 127.0.0.1 for OAuth flow.");
+      if (
+         redirectUrlObject.hostname !== "localhost" &&
+         redirectUrlObject.hostname !== "127.0.0.1"
+      ) {
+         throw new Error(
+            "Redirect URI must be localhost or 127.0.0.1 for OAuth flow.",
+         );
       }
 
       return new Promise((resolve, reject) => {
          console.log(`Please visit this URL to authorize Exist: ${oAuthUrl}`);
 
-         // Replaced Deno.serve with http.createServer
          const server = http.createServer((req, res) => {
             const url = new URL(req.url ?? "", `http://localhost`);
             const code = url.searchParams.get("code");
