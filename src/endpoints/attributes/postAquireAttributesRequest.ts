@@ -8,21 +8,37 @@ type AcquireAttributeParam = {
    success_attributes?: boolean;
 };
 
+/**
+ * Represents the parameters for a request to acquire an attribute template.
+ */
 export type AquireAttributeTemplateParam = AcquireAttributeParam & {
    /** The name of the attribute template to acquire */
    template: AttributeTemplateId;
 };
 
+/**
+ * Represents the parameters for a request to acquire an untemplated attribute by name.
+ */
 export type AcquireAttributeByNameParam = AcquireAttributeParam & {
    /** The name of the attribute to acquire */
    name: string;
 };
 
+/**
+ * Represents the response from a request to acquire attributes.
+ */
 export type AquireAttributesResponse = {
    success: { name: string; active: boolean }[];
    error: { title: string; error_code: string; error: string }[];
 };
 
+/**
+ * Returns a request object with a POST request that acquires attributes from attribute templates or by name.
+ * @param baseUrl - The base URL for the REST API.
+ * @param parameters - The parameters for acquiring the attributes.
+ *
+ * @returns A request object with a POST request for the `/attributes/acquire/` endpoint and the specified parameters.
+ */
 export function aquireAttributesRequest(
    baseUrl: string,
    parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[],

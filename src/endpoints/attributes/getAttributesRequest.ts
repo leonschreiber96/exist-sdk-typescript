@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of attributes.
+ */
 export type GetAttributesParams = PaginatedRequestParams & {
    /** *Optional* Comma-separated list of groups to filter by, e.g. activity, workouts, ... */
    groups?: string[];

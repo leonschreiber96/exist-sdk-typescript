@@ -10,11 +10,17 @@ type CreateAttributeParams = {
    successObjects?: boolean;
 };
 
+/**
+ * Represents the parameters for a request to create an attribute from an attribute template.
+ */
 export type CreateTemplatedAttributeParams = CreateAttributeParams & {
    /** The name of the [attribute template](https://developer.exist.io/reference/object_types/#list-of-attribute-templates) to use */
    template: AttributeTemplateId;
 };
 
+/**
+ * Represents the parameters for a request to create an untemplated attribute by name.
+ */
 export type CreateAttributeByNameParams = CreateAttributeParams & {
    /** User-facing title for the new attribute. */
    label: string;
@@ -26,11 +32,21 @@ export type CreateAttributeByNameParams = CreateAttributeParams & {
    valueType: AttributeValueType;
 };
 
+/**
+ * Represents the response from a request to create attributes.
+ */
 export type CreatettributesResponse = {
    success: Attribute[];
    error: { title: string; error_code: string; error: string }[];
 };
 
+/**
+ * Returns a request object with a POST request that creates attributes from attribute templates or by name.
+ * @param baseUrl - The base URL for the REST API.
+ * @param parameters - The parameters for creating the attributes.
+ *
+ * @returns A request object with a POST request for the `/attributes/` endpoint and the specified parameters.
+ */
 export function createAttributeRequest(
    baseUrl: string,
    parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],

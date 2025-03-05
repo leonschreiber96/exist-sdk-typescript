@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a single attribute and its values.
+ */
 export type GetAttributeParams = PaginatedRequestParams & {
    /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
    dateMax?: Date;

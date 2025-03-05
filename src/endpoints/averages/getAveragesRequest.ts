@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of averages.
+ */
 export type GetAveragesParams = PaginatedRequestParams & {
    /** *Optional* `yyyy-mm-dd`formatted date string defining the minimum (oldest) date inclusive. */
    dateMin?: Date;

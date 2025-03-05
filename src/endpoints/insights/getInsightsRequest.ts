@@ -1,5 +1,8 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
 
+/**
+ * Represents the query parameters for a request to get a list of insights.
+ */
 export type GetInsightsParams = PaginatedRequestParams & {
    /** *Optional* Oldest date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
    date_min?: string;

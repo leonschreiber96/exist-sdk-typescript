@@ -1,3 +1,6 @@
+/**
+ * Represents the response from a successful request to release attributes.
+ */
 export type ReleaseAttributesResponse = {
    success: { name: string }[];
    error: { title: string; error_code: string; error: string }[];
