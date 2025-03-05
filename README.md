@@ -52,13 +52,16 @@ For **Option 3**, the `useOAuthFlow` method requires two arguments:
 
 1. **Scopes**: A list of scopes that define the level of access your client has. Scopes can be read or write permissions (for example, `mood_read`, `activity_read`, `activity_write`, etc.). The first argument to `useOAuthFlow` should be an array of the scopes your client will need. You can choose to give your client read, write, or both types of permissions, depending on your use case.
 
-2. **Redirect URI**: This must be a free port on localhost (e.g., `http://localhost:8000/callback`). Your client will listen for the OAuth response from Exist on this port and automatically extract the access and refresh tokens. After completing the OAuth flow, be sure to **save the tokens** that the client displays.
+2. **Redirect URI**: This must be a free port on localhost (e.g., `http://localhost:8000/`) and **must match the redirect uri you entered when creating your developer client**. Your client will listen for the OAuth response from Exist on this port and automatically extract the access and refresh tokens. After completing the OAuth flow, be sure to **save the tokens** that the client displays.
+
+3. **Callback** (*optional*): Function that will be executed after the oAuth flow has been completed. Gets the oAuth token response passed as a parameter. You can use this for example to save your tokens to a file, using `authorizer.dumpAuthorizationToFile("filename.json")`
 
 Here is an example:
 ```typescript
 authorizer.useOAuthFlow(
-  ["mood_read", "activity_read", "activity_write"], // Scopes
-  "http://localhost:8000/callback" // Redirect URI
+  [ReadScope.FINANCE, WriteScope.FINANCE], // Scopes
+  "http://localhost:8000/", // Redirect URI
+  (tokens) => { console.log(tokens) } // Callback function
 );
 ```
 
@@ -77,9 +80,9 @@ const profile = await client.users.getUserProfile();
 console.log(profile);
 ```
 
-#### **📌 Get Tracked Attributes**
+#### **📌 Get Owned Attributes**
 ```typescript
-const attributes = await client.attributes.getAttributes();
+const attributes = await client.attributes.getOwned();
 console.log(attributes);
 ```
 
@@ -99,12 +102,6 @@ The SDK provides structured access to the Exist.io API through these modules:
 | `correlations` | Find correlations between tracked attributes. |
 | `insights` | Retrieve generated insights. |
 
-Example:
-```typescript
-const correlations = await client.correlations.getCorrelations();
-console.log(correlations);
-```
-
 ## **Contributing**
 Contributions are welcome! To contribute:
 1. Fork the repository.
@@ -115,6 +112,3 @@ Contributions are welcome! To contribute:
 
 ## **License**
 This project is licensed under the **MIT License**.
-
-## **📌 Summary**
-This SDK provides a **fully typed, easy-to-use** interface for Exist.io, with built-in OAuth2 authentication and structured API access. 🚀
