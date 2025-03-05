@@ -1,11 +1,6 @@
 import type { Scope } from "../model/scope.ts";
 import http from "node:http";
 
-type AuthorizationFile = {
-   oAuthToken: string;
-   refreshToken: string;
-};
-
 type OAuthTokenResponse = {
    access_token: string;
    refresh_token: string;
@@ -14,18 +9,14 @@ type OAuthTokenResponse = {
    scope: string;
 };
 
-enum AuthStrategy {
-   FILE = "file",
-   TOKENS = "tokens",
-   OAUTH = "oauth",
-}
-
 export default class ExistAuthorizer {
    private oAuthServiceUrl: string = "https://exist.io/oauth2";
    private clientId: string;
    private clientSecret: string;
    private oAuthToken: string | null = null;
    private refreshToken: string | null = null;
+   private expiresIn: number | null = null;
+   private scope: Scope | Scope[] | null = null;
 
    constructor(clientId: string, clientSecret: string) {
       this.clientId = clientId;
@@ -36,33 +27,105 @@ export default class ExistAuthorizer {
       request.headers.set("Authorization", `Bearer ${this.oAuthToken}`);
    }
 
+   /**
+    * Use the provided authorization file for authorization.
+    * @param filePath The path to the authorization file to use for authorization.
+    */
    public useAuthorizationFile(filePath: string) {
       const file = Deno.readTextFileSync(filePath);
 
-      const data = JSON.parse(file) as AuthorizationFile;
-      if (!data.oAuthToken) {
+      const data = JSON.parse(file) as OAuthTokenResponse;
+      if (!data.access_token) {
          throw new Error("Invalid authorization file: missing oAuthToken");
       }
-      if (!data.refreshToken) {
+      if (!data.refresh_token) {
          throw new Error("Invalid authorization file: missing refreshToken");
       }
-      this.oAuthToken = data.oAuthToken;
-      this.refreshToken = data.refreshToken;
+      this.oAuthToken = data.access_token;
+      this.refreshToken = data.refresh_token;
+      this.scope = data.scope?.split("+") as Scope | Scope[];
+      this.expiresIn = data.expires_in;
    }
 
+   /**
+    * Use the provided OAuth token and refresh token for authorization.
+    * @param oAuthToken The OAuth token to use for authorization.
+    * @param refreshToken The refresh token to use when the OAuth token expires.
+    */
    public useTokens(oAuthToken: string, refreshToken: string) {
       this.oAuthToken = oAuthToken;
       this.refreshToken = refreshToken;
    }
 
-   public async useOAuthFlow(scope: Scope | Scope[], redirectUri: string) {
+   /**
+    * Use the OAuth flow to authorize with Exist. This will provide the url to visit to authorize Exist, and will wait for the user to authorize the client.
+    * @param scope List of scopes to request authorization for (see https://developer.exist.io/reference/authentication/oauth2/#scopes).
+    * @param redirectUri The URI to send the authorization grant to. Should match the redirect URI set in the Exist developer client settings.
+    * @param [callback] *Optional* A callback function to handle the OAuth token response (e.g., to save the tokens to a file).
+    */
+   public async useOAuthFlow(
+      scope: Scope | Scope[],
+      redirectUri: string,
+      callback?: (grant: OAuthTokenResponse) => void,
+   ) {
       const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
-      const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri);
+      const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri) as OAuthTokenResponse;
 
       this.oAuthToken = tokens.access_token;
       this.refreshToken = tokens.refresh_token;
+      this.scope = tokens.scope.split("+") as Scope | Scope[];
+      this.expiresIn = tokens.expires_in;
 
-      console.log("Authorization successful!", tokens);
+      if (!callback) {
+         console.log("Authorization successful!", tokens);
+      } else {
+         callback(tokens);
+      }
+   }
+
+   /**
+    * Refresh the OAuth token using the refresh token. This will update the current OAuth token, refresh token, and expiration time.
+    * Don't forget to save the new tokens to a file!
+    */
+   public async refreshOAuthToken() {
+      const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
+
+      const response = await fetch(oAuthUrl, {
+         method: "POST",
+         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+         body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: this.refreshToken as string,
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+         }),
+      });
+      const data = await response.json() as OAuthTokenResponse;
+
+      this.oAuthToken = data.access_token;
+      this.refreshToken = data.refresh_token;
+      this.expiresIn = data.expires_in;
+      this.scope = data.scope?.split("+") as Scope | Scope[];
+   }
+
+   /**
+    * Dump the current authorization data to a file.
+    * @param filePath The path to the file to dump the authorization data to.
+    */
+   public dumpAuthorizationToFile(filePath: string) {
+      if (!this.oAuthToken || !this.refreshToken || !this.scope || !this.expiresIn) {
+         throw new Error("Missing authorization data to dump to file.");
+      }
+
+      const data: OAuthTokenResponse = {
+         access_token: this.oAuthToken,
+         refresh_token: this.refreshToken,
+         token_type: "Bearer",
+         expires_in: this.expiresIn,
+         scope: typeof this.scope === "string" ? this.scope : this.scope.join("+"),
+      };
+
+      Deno.writeTextFileSync(filePath, JSON.stringify(data, null, 3));
    }
 
    private getOAuthTokens(
@@ -87,7 +150,9 @@ export default class ExistAuthorizer {
                reject(`Failed to get OAuth tokens: ${response.status} → ${response.statusText}`);
             }
 
-            resolve(response.json() as Promise<OAuthTokenResponse>);
+            response.json().then((data) => {
+               resolve(data as OAuthTokenResponse);
+            });
          });
       });
    }
@@ -138,5 +203,4 @@ export default class ExistAuthorizer {
    }
 }
 
-export type { AuthorizationFile };
-export { AuthStrategy };
+export type { OAuthTokenResponse };
