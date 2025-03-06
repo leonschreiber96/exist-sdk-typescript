@@ -117,15 +117,18 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A paginated response containing all values for the specified attribute.
     */
-   public async getSingle(attribute: string, parameters?: GetAttributeParams): Promise<PaginatedResponse<Attribute>> {
+   public async getValuesForAttribute<T>(
+      attribute: string,
+      parameters?: GetAttributeParams,
+   ): Promise<PaginatedResponse<{ date: string; value: T }>> {
       const request = getAttributeRequest(this.baseUrl, attribute, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<{ date: string; value: T }>>(request);
 
       if (response.statusCode !== 200) {
          throw new Error(`Failed to get attribute: ${response.statusCode}`);
       }
 
-      return response as PaginatedResponse<Attribute>;
+      return response as PaginatedResponse<{ date: string; value: T }>;
    }
 
    /**
