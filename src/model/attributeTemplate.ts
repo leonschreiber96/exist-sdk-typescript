@@ -116,7 +116,7 @@ enum AttributeTemplateId {
    DayLength = "day_length",
 }
 
-type AttributeTemplate = {
+export interface AttributeTemplate {
    name: AttributeTemplateId;
    label: string;
    group: {
@@ -127,6 +127,6 @@ type AttributeTemplate = {
    priority: number;
    value_type: AttributeValueType;
    value_type_description: string;
-};
+}
 
-export { type AttributeTemplate, AttributeTemplateId };
+export { AttributeTemplateId };
