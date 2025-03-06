@@ -1,7 +1,7 @@
 export { default as ExistClient } from "./src/existClient.ts";
 export { default as ExistAuthorizer } from "./src/authorization/existAuthorizer.ts";
 
-export type { Attribute } from "./src/model/attribute.ts";
+export { type Attribute } from "./src/model/attribute.ts";
 export type { AttributeAverage } from "./src/model/attributeAverage.ts";
 export { type AttributeTemplate, AttributeTemplateId } from "./src/model/attributeTemplate.ts";
 export { AttributeValueType } from "./src/model/attributeValueType.ts";
