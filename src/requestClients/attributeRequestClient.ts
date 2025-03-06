@@ -1,6 +1,6 @@
 import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import type { Attribute } from "../model/attribute.ts";
-import type PaginatedResponse from "../model/paginatedResponse.ts";
+import type { PaginatedResponse } from "../model/paginatedResponse.ts";
 import { type GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import { getAttributesWithValuesRequest } from "../endpoints/attributes/getAttributesWithValuesRequest.ts";
@@ -123,7 +123,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
 
       if (response.statusCode !== 200) {
          throw new Error(`Failed to get attribute: ${response.statusCode}`);
-      }  
+      }
 
       return response as PaginatedResponse<Attribute>;
    }

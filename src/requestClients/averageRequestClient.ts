@@ -2,7 +2,7 @@ import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts
 import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import { type GetAveragesParams, getAveragesRequest } from "../endpoints/averages/getAveragesRequest.ts";
 import type { AttributeAverage } from "../model/attributeAverage.ts";
-import type PaginatedResponse from "../model/paginatedResponse.ts";
+import type { PaginatedResponse } from "../model/paginatedResponse.ts";
 
 export default class AverageRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
