@@ -36,7 +36,7 @@ export function getAttributesWithValuesRequest(baseUrl: string, parameters?: Get
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
    if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
    if (parameters?.days) url.searchParams.append("days", parameters.days.toString());
-   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax.toISOString());
+   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax.toISOString().split("T")[0]);
    if (parameters?.groups) url.searchParams.append("groups", parameters.groups.join(","));
    if (parameters?.attributes) url.searchParams.append("attributes", parameters.attributes.join(","));
    if (parameters?.templates) url.searchParams.append("templates", parameters.templates.join(","));
