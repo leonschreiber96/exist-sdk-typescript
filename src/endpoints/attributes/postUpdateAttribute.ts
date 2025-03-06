@@ -47,6 +47,10 @@ export function updateAttributeRequest<T>(
       headers: {
          "Content-Type": "application/json",
       },
-      body: JSON.stringify(parameters),
+      body: JSON.stringify(parameters.map((param) => ({
+         name: param.name,
+         date: param.date instanceof Date ? param.date.toISOString().split("T")[0] : param.date,
+         value: param.value,
+      }))),
    });
 }
