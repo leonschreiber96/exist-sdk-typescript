@@ -123,7 +123,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
 
       if (response.statusCode !== 200) {
          throw new Error(`Failed to get attribute: ${response.statusCode}`);
-      }
+      }  
 
       return response as PaginatedResponse<Attribute>;
    }
