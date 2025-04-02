@@ -7,7 +7,7 @@ type CreateAttributeParams = {
    manual?: boolean;
 
    /** *Optional* boolean which, if set in query params, returns full attribute objects on success rather than the contents of your request */
-   successObjects?: boolean;
+   success_objects?: boolean;
 };
 
 /**
@@ -29,7 +29,7 @@ export type CreateAttributeByNameParams = CreateAttributeParams & {
    group: string;
 
    /** [Value type](https://developer.exist.io/reference/object_types/#attribute-value-types) of the attribute. */
-   valueType: AttributeValueType;
+   value_type: AttributeValueType;
 };
 
 /**
@@ -51,7 +51,7 @@ export function createAttributeRequest(
    baseUrl: string,
    parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
 ): Request {
-   const url = new URL(`${baseUrl}/attributes/`);
+   const url = new URL(`${baseUrl}/attributes/create/`);
 
    return new Request(url.toString(), {
       method: "POST",

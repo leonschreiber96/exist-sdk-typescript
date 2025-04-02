@@ -190,6 +190,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
    ): Promise<AquireAttributesResponse> {
       const request = createAttributeRequest(this.baseUrl, parameters);
+
       const response = await this.authAndFetch<AquireAttributesResponse>(request);
 
       if (response.statusCode !== 200) {
