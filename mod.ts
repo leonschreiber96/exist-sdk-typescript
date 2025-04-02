@@ -24,3 +24,4 @@ export { type UpdateAttributeValueParam,type UpdateAttributesResponse } from "./
 export { type GetAveragesParams } from "./src/endpoints/averages/getAveragesRequest.ts";
 export { type GetCorrelationsParams } from "./src/endpoints/correlations/getCorrelationsRequest.ts";
 export { type GetInsightsParams } from "./src/endpoints/insights/getInsightsRequest.ts";
+export { type PaginatedResponse } from "./src/model/paginatedResponse.ts";

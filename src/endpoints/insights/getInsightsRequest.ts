@@ -5,10 +5,10 @@ import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
  */
 export type GetInsightsParams = PaginatedRequestParams & {
    /** *Optional* Oldest date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
-   date_min?: string;
+   dateMin?: string;
 
    /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
-   date_max?: string;
+   dateMax?: string;
 
    /** *Optional* Filter by insight priority, where `1` = today and `4` = last month. */
    priority?: number;
@@ -26,8 +26,8 @@ export function getInsightsRequest(baseUrl: string, parameters?: GetInsightsPara
 
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
    if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
-   if (parameters?.date_min) url.searchParams.append("date_min", parameters.date_min);
-   if (parameters?.date_max) url.searchParams.append("date_max", parameters.date_max);
+   if (parameters?.dateMin) url.searchParams.append("date_min", parameters.dateMin);
+   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax);
    if (parameters?.priority) url.searchParams.append("priority", parameters.priority.toString());
 
    return new Request(url.toString());

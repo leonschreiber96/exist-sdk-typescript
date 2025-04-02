@@ -1,6 +1,6 @@
 import type ExistAuthorizer from "../authorization/existAuthorizer.ts";
 import type { Attribute } from "../model/attribute.ts";
-import type PaginatedResponse from "../model/paginatedResponse.ts";
+import type { PaginatedResponse } from "../model/paginatedResponse.ts";
 import { type GetAttributeParams, getAttributeRequest } from "../endpoints/attributes/getAttributeRequest.ts";
 import AuthorizedRequestClient from "../authorization/authorizedRequestClient.ts";
 import { getAttributesWithValuesRequest } from "../endpoints/attributes/getAttributesWithValuesRequest.ts";
@@ -117,15 +117,18 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     *
     * @returns A paginated response containing all values for the specified attribute.
     */
-   public async getSingle(attribute: string, parameters?: GetAttributeParams): Promise<PaginatedResponse<Attribute>> {
+   public async getValuesForAttribute<T>(
+      attribute: string,
+      parameters?: GetAttributeParams,
+   ): Promise<PaginatedResponse<{ date: string; value: T }>> {
       const request = getAttributeRequest(this.baseUrl, attribute, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
+      const response = await this.authAndFetch<PaginatedResponse<{ date: string; value: T }>>(request);
 
       if (response.statusCode !== 200) {
          throw new Error(`Failed to get attribute: ${response.statusCode}`);
-      }  
+      }
 
-      return response as PaginatedResponse<Attribute>;
+      return response as PaginatedResponse<{ date: string; value: T }>;
    }
 
    /**
@@ -187,6 +190,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
    ): Promise<AquireAttributesResponse> {
       const request = createAttributeRequest(this.baseUrl, parameters);
+
       const response = await this.authAndFetch<AquireAttributesResponse>(request);
 
       if (response.statusCode !== 200) {

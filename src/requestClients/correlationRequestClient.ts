@@ -6,7 +6,7 @@ import {
    getCorrelationsRequest,
 } from "../endpoints/correlations/getCorrelationsRequest.ts";
 import type { Correlation } from "../model/correlation.ts";
-import type PaginatedResponse from "../model/paginatedResponse.ts";
+import type { PaginatedResponse } from "../model/paginatedResponse.ts";
 
 export default class CorrelationRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
