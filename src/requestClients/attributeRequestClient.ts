@@ -218,10 +218,12 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       const response = await this.authAndFetch<UpdateAttributesResponse>(request);
 
       if (response.statusCode !== 200) {
-         throw new Error(`
-            Failed to update attributes: ${response.statusCode}
-            ${JSON.stringify(response.failed)}
-         `);
+         // `response` may be `{ statusCode: number }` when parsing failed or the
+         // server returned a non-JSON body. Use the `in` operator to narrow the
+         // union so TypeScript knows `failed` exists before accessing it.
+         const failedPart = "failed" in response ? `\n${JSON.stringify(response.failed)}` : "";
+
+         throw new Error(`Failed to update attributes: ${response.statusCode}${failedPart}`);
       }
 
       return response as UpdateAttributesResponse;

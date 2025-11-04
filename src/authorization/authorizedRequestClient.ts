@@ -15,7 +15,15 @@ export default abstract class AuthorizedRequestClient extends BaseRequestClient 
 
       try {
          const data = await response.json();
-         return { ...data, statusCode: response.status };
+
+         // Only spread when the parsed JSON is a non-null object.
+         // Spreading primitives (string/number/boolean) causes TS2698.
+         if (data !== null && typeof data === "object") {
+            return { ...(data as Record<string, unknown>), statusCode: response.status } as T & { statusCode: number };
+         }
+
+         // Non-object response (e.g. plain text or number) — return status only.
+         return { statusCode: response.status } as { statusCode: number };
       } catch (_error) {
          return { statusCode: response.status } as { statusCode: number };
       }
