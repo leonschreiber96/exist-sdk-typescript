@@ -35,6 +35,7 @@ import {
    type IncrementAttributesResponse,
    type IncrementAttributeValueParam,
 } from "../endpoints/attributes/postIncrementUpdate.ts";
+import { GetAttributesWithValuesParams } from "../../mod.ts";
 
 export default class AttributeRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -82,7 +83,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * @returns A paginated response of attribute objects belonging to this user.
     * `available_services` shows the services a user has connected which have indicated they can provide data for this attribute.
     */
-   public async getManyWithValues(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
+   public async getManyWithValues(parameters?: GetAttributesWithValuesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesWithValuesRequest(this.baseUrl, parameters);
       const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
 
@@ -217,7 +218,10 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       const response = await this.authAndFetch<UpdateAttributesResponse>(request);
 
       if (response.statusCode !== 200) {
-         throw new Error(`Failed to update attributes: ${response.statusCode}`);
+         throw new Error(`
+            Failed to update attributes: ${response.statusCode}
+            ${JSON.stringify(response.failed)}
+         `);
       }
 
       return response as UpdateAttributesResponse;

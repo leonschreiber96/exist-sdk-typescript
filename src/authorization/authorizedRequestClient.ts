@@ -15,11 +15,7 @@ export default abstract class AuthorizedRequestClient extends BaseRequestClient 
 
       try {
          const data = await response.json();
-         if (typeof data === "object" && data !== null) {
-            return { ...data, statusCode: response.status };
-         } else {
-            return { statusCode: response.status } as { statusCode: number };
-         }
+         return { ...data, statusCode: response.status };
       } catch (_error) {
          return { statusCode: response.status } as { statusCode: number };
       }
