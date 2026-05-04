@@ -20,7 +20,7 @@ deno add jsr:@leonschreiber96/exist-sdk-typescript
 
 ## **Getting Started**
 
-### **0️⃣ Import the SDK**
+### **1. Import the SDK**
 Using NPM:
 ```typescript
 import { ExistAuthorizer, ExistClient } from "exist-sdk-typescript";
@@ -31,7 +31,7 @@ Using Deno:
 import { ExistClient, ExistAuthorizer } from "@leonschreiber96/exist-sdk-typescript";
 ```
 
-### **1️⃣ Authentication**
+### **2. Authentication**
 To interact with the Exist.io API, you must authenticate using OAuth2. Follow [this guide](https://exist.io/blog/how-to-get-api-token/) to create an API client.
 
 Use the `ExistAuthorizer` class to provide authentication tokens in one of three ways:
@@ -79,26 +79,26 @@ authorizer.useOAuthFlow(
 );
 ```
 
-### **2️⃣ Initialize the ExistClient**
+### **3. Initialize the ExistClient**
 Once authenticated, initialize `ExistClient` to make API calls:
 ```typescript
 const client = new ExistClient(authorizer);
 ```
 
-### **3️⃣ Fetch Data from Exist.io**
-#### **📌 Get User Profile**
+### **4. Fetch Data from Exist.io**
+#### **Get User Profile**
 ```typescript
 const profile = await client.users.getUserProfile();
 console.log(profile);
 ```
 
-#### **📌 Get Owned Attributes**
+#### **Get Owned Attributes**
 ```typescript
 const attributes = await client.attributes.getOwned();
 console.log(attributes);
 ```
 
-#### **📌 Update an Attribute**
+#### **Update an Attribute**
 ```typescript
 await client.attributes.updateValues([{ name: "steps", value: 5000, date: "2025-03-05" }]);
 ```
