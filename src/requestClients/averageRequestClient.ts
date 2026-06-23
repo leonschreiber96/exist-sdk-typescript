@@ -19,12 +19,6 @@ export default class AverageRequestClient extends AuthorizedRequestClient {
     */
    public async getMany(parameters?: GetAveragesParams): Promise<PaginatedResponse<AttributeAverage>> {
       const request = getAveragesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get averages: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<AttributeAverage>;
+      return await this.authAndFetch<PaginatedResponse<AttributeAverage>>(request, "get averages");
    }
 }

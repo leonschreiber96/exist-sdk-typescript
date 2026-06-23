@@ -50,16 +50,19 @@ authorizer.useOAuthFlow(["mood_read", "activity_read"], "http://localhost:8000")
 ```
 
 #### **Authentication JSON File**
-If you're using **Option 2** (loading tokens from a JSON file), the JSON file should look like this:
+If you're using **Option 2** (loading tokens from a JSON file), the JSON file should be in the standard OAuth2 response format:
 
 ```json
 {
-  "oAuthToken": "your-access-token",
-  "refreshToken": "your-refresh-token"
+  "access_token": "your-access-token",
+  "refresh_token": "your-refresh-token",
+  "token_type": "Bearer",
+  "expires_in": 36000,
+  "scope": "activity_read+mood_read"
 }
 ```
 
-The `oAuthToken` is the access token, and the `refreshToken` is the refresh token that can be used to obtain new access tokens when they expire.
+You can generate this file automatically by calling `authorizer.dumpAuthorizationToFile("tokens.json")` after completing the OAuth2 flow.
 
 #### **OAuth2 Flow**
 For **Option 3**, the `useOAuthFlow` method requires two arguments:
@@ -101,6 +104,21 @@ console.log(attributes);
 #### **📌 Update an Attribute**
 ```typescript
 await client.attributes.updateValues([{ name: "steps", value: 5000, date: "2025-03-05" }]);
+```
+
+#### **📌 Handle API Errors**
+All API errors throw an `ExistApiError` with a `statusCode` and the API's error body:
+```typescript
+import { ExistApiError } from "exist-sdk-typescript";
+
+try {
+  await client.attributes.updateValues([{ name: "steps", value: 5000, date: "2025-03-05" }]);
+} catch (error) {
+  if (error instanceof ExistApiError) {
+    console.error(`HTTP ${error.statusCode}: ${error.message}`);
+    console.error(error.body); // full API error response
+  }
+}
 ```
 
 ## **API Reference**

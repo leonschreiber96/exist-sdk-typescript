@@ -9,13 +9,14 @@ import {
    getAttributeTemplatesRequest,
 } from "../endpoints/attributes/getAttributeTemplatesRequest.ts";
 import { type GetAttributesParams, getAttributesRequest } from "../endpoints/attributes/getAttributesRequest.ts";
+import { type GetOwnedAttributesParams, getOwnedAttributesRequest } from "../endpoints/attributes/getOwnedAttributesRequest.ts";
 import type { AttributeTemplate } from "../model/attributeTemplate.ts";
 import {
    type AcquireAttributeByNameParam,
-   aquireAttributesRequest,
-   type AquireAttributesResponse,
-   type AquireAttributeTemplateParam,
-} from "../endpoints/attributes/postAquireAttributesRequest.ts";
+   acquireAttributesRequest,
+   type AcquireAttributesResponse,
+   type AcquireAttributeTemplateParam,
+} from "../endpoints/attributes/postAcquireAttributesRequest.ts";
 import {
    releaseAttributesRequest,
    type ReleaseAttributesResponse,
@@ -23,6 +24,7 @@ import {
 import {
    type CreateAttributeByNameParams,
    createAttributeRequest,
+   type CreateAttributesResponse,
    type CreateTemplatedAttributeParams,
 } from "../endpoints/attributes/postCreateAttributeRequest.ts";
 import {
@@ -50,13 +52,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     */
    public async getTemplates(parameters?: GetAttributeTemplatesParams): Promise<PaginatedResponse<AttributeTemplate>> {
       const request = getAttributeTemplatesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<AttributeTemplate>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get attribute templates: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<AttributeTemplate>;
+      return await this.authAndFetch<PaginatedResponse<AttributeTemplate>>(request, "get attribute templates");
    }
 
    /**
@@ -67,13 +63,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     */
    public async getMany(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get attributes: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<Attribute>;
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request, "get attributes");
    }
 
    /**
@@ -85,30 +75,18 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     */
    public async getManyWithValues(parameters?: GetAttributesWithValuesParams): Promise<PaginatedResponse<Attribute>> {
       const request = getAttributesWithValuesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get attributes with values: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<Attribute>;
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request, "get attributes with values");
    }
 
    /**
     * Retrieve a list of the user's attributes, without any values. Results are limited to what your service already owns. (see https://developer.exist.io/reference/attribute_ownership/#list-owned-attributes).
     *
     * @param [parameters] - *Optional* The query parameters to include in the request.
-    * @returns A paginated response containing all attributes owned by the user.
+    * @returns A paginated response containing all attributes owned by this service.
     */
-   public async getOwned(parameters?: GetAttributesParams): Promise<PaginatedResponse<Attribute>> {
-      const request = getAttributesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Attribute>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get owned attributes: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<Attribute>;
+   public async getOwned(parameters?: GetOwnedAttributesParams): Promise<PaginatedResponse<Attribute>> {
+      const request = getOwnedAttributesRequest(this.baseUrl, parameters);
+      return await this.authAndFetch<PaginatedResponse<Attribute>>(request, "get owned attributes");
    }
 
    /**
@@ -123,13 +101,7 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
       parameters?: GetAttributeParams,
    ): Promise<PaginatedResponse<{ date: string; value: T }>> {
       const request = getAttributeRequest(this.baseUrl, attribute, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<{ date: string; value: T }>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get attribute: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<{ date: string; value: T }>;
+      return await this.authAndFetch<PaginatedResponse<{ date: string; value: T }>>(request, `get values for attribute "${attribute}"`);
    }
 
    /**
@@ -139,20 +111,14 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * Acquiring a templated attribute the user doesn't have yet will create this attribute and give you ownership.
     * (see https://developer.exist.io/reference/attribute_ownership/#acquire-attributes)
     *
-    * @param [parameters] - List of attributes to acquire with [optional parameters](https://developer.exist.io/reference/attribute_ownership/#parameters).
+    * @param parameters - List of attributes to acquire with [optional parameters](https://developer.exist.io/reference/attribute_ownership/#parameters).
     * @returns A list of successfully acquired attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
    public async acquire(
-      parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
-   ): Promise<AquireAttributesResponse> {
-      const request = aquireAttributesRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<AquireAttributesResponse>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to acquire attributes: ${response.statusCode}`);
-      }
-
-      return response as AquireAttributesResponse;
+      parameters: (AcquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
+   ): Promise<AcquireAttributesResponse> {
+      const request = acquireAttributesRequest(this.baseUrl, parameters);
+      return await this.authAndFetch<AcquireAttributesResponse>(request, "acquire attributes");
    }
 
    /**
@@ -160,18 +126,12 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * This will allow the user to acquire the attribute themselves or for another service to acquire it.
     * (see https://developer.exist.io/reference/attribute_ownership/#release-attributes)
     *
-    * @param attributes - List of attributes to release.
+    * @param attributes - List of attribute names to release.
     * @returns A list of successfully released attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async release(...attributes: string[]): Promise<ReleaseAttributesResponse> {
-      const request = releaseAttributesRequest(this.baseUrl, ...attributes);
-      const response = await this.authAndFetch<ReleaseAttributesResponse>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to release attributes: ${response.statusCode}`);
-      }
-
-      return response as ReleaseAttributesResponse;
+   public async release(attributes: string[]): Promise<ReleaseAttributesResponse> {
+      const request = releaseAttributesRequest(this.baseUrl, attributes);
+      return await this.authAndFetch<ReleaseAttributesResponse>(request, "release attributes");
    }
 
    /**
@@ -183,22 +143,15 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
     * If you choose not to use a template, an entirely custom attribute can be defined, with its own label and value type.
     * It must belong to an existing group.
     *
-    * @param [parameters] List of attributes to create. Can be templated or custom (see https://developer.exist.io/reference/creating_attributes/#parameters).
+    * @param parameters List of attributes to create. Can be templated or custom (see https://developer.exist.io/reference/creating_attributes/#parameters).
     *
     * @returns A list of successfully created attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
    public async createNew(
       parameters: (CreateTemplatedAttributeParams | CreateAttributeByNameParams)[],
-   ): Promise<AquireAttributesResponse> {
+   ): Promise<CreateAttributesResponse> {
       const request = createAttributeRequest(this.baseUrl, parameters);
-
-      const response = await this.authAndFetch<AquireAttributesResponse>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to create attributes: ${response.statusCode}`);
-      }
-
-      return response as AquireAttributesResponse;
+      return await this.authAndFetch<CreateAttributesResponse>(request, "create attributes");
    }
 
    /**
@@ -210,23 +163,12 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
 
       Check value types for each attribute in [list of supported attributes](https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
     *
-    * @param [parameters] List of attributes to update.
+    * @param parameters List of attributes to update.
     * @returns A list of successfully updated attributes and any errors that occurred (incl. name of the attribute for which they occurred).
     */
-   public async updateValues<T>(...parameters: UpdateAttributeValueParam<T>[]): Promise<UpdateAttributesResponse> {
-      const request = updateAttributeRequest<T>(this.baseUrl, ...parameters);
-      const response = await this.authAndFetch<UpdateAttributesResponse>(request);
-
-      if (response.statusCode !== 200) {
-         // `response` may be `{ statusCode: number }` when parsing failed or the
-         // server returned a non-JSON body. Use the `in` operator to narrow the
-         // union so TypeScript knows `failed` exists before accessing it.
-         const failedPart = "failed" in response ? `\n${JSON.stringify(response.failed)}` : "";
-
-         throw new Error(`Failed to update attributes: ${response.statusCode}${failedPart}`);
-      }
-
-      return response as UpdateAttributesResponse;
+   public async updateValues<T>(parameters: UpdateAttributeValueParam<T>[]): Promise<UpdateAttributesResponse> {
+      const request = updateAttributeRequest<T>(this.baseUrl, parameters);
+      return await this.authAndFetch<UpdateAttributesResponse>(request, "update attribute values");
    }
 
    /**
@@ -242,17 +184,11 @@ export default class AttributeRequestClient extends AuthorizedRequestClient {
 
       Check value types for each attribute in [list of supported attributes](https://developer.exist.io/reference/object_types/#list-of-attribute-templates).
 
-      @param [parameters] List of attributes to increment.
+      @param parameters List of attributes to increment.
       @returns A list of successfully incremented attributes and any errors that occurred (incl. name of the attribute for which they occurred
     */
-   public async incrementValues(...parameters: IncrementAttributeValueParam[]): Promise<IncrementAttributesResponse> {
-      const request = incrementAttributeRequest(this.baseUrl, ...parameters);
-      const response = await this.authAndFetch<IncrementAttributesResponse>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to increment attributes: ${response.statusCode}`);
-      }
-
-      return response as IncrementAttributesResponse;
+   public async incrementValues(parameters: IncrementAttributeValueParam[]): Promise<IncrementAttributesResponse> {
+      const request = incrementAttributeRequest(this.baseUrl, parameters);
+      return await this.authAndFetch<IncrementAttributesResponse>(request, "increment attribute values");
    }
 }

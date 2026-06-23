@@ -1,3 +1,5 @@
+import { toDateString } from "../../util/dateUtils.ts";
+
 /**
  * Represents the parameters for a request to increment attribute values.
  */
@@ -5,8 +7,8 @@ export type IncrementAttributeValueParam = {
    /** The attribute name, eg. `mood_note` */
    name: string;
 
-   /** The date for which the value should be incremented. (Date or string of format `YYYY-mm-dd`) */
-   date: Date | `${number}-${number}-${number}`;
+   /** The date for which the value should be incremented. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   date: Date | string;
 
    /** The amount by which the value should be incremented. */
    value: number;
@@ -38,7 +40,7 @@ export type IncrementAttributesResponse = {
  */
 export function incrementAttributeRequest(
    baseUrl: string,
-   ...parameters: IncrementAttributeValueParam[]
+   parameters: IncrementAttributeValueParam[],
 ): Request {
    const url = new URL(`${baseUrl}/attributes/increment/`);
 
@@ -49,7 +51,7 @@ export function incrementAttributeRequest(
       },
       body: JSON.stringify(parameters.map((param) => ({
          name: param.name,
-         date: param.date instanceof Date ? param.date.toISOString().split("T")[0] : param.date,
+         date: toDateString(param.date),
          value: param.value,
       }))),
    });

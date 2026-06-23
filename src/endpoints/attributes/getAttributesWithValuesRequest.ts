@@ -1,4 +1,5 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import { toDateString } from "../../util/dateUtils.ts";
 
 /**
  * Represents the query parameters for a request to get a list of attributes **including** values.
@@ -7,8 +8,8 @@ export type GetAttributesWithValuesParams = PaginatedRequestParams & {
    /** *Optional* Integer defining how many day values to include in values, max `31`, default `1`. */
    days?: number;
 
-   /** *Optional* `yyyy-mm-dd` formatted date string defining the maximum date in values. */
-   dateMax?: Date;
+   /** *Optional* Maximum date (inclusive) of values to include. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   dateMax?: Date | string;
 
    /** *Optional* List of groups to filter by, e.g. `['activity', 'workouts']`. */
    groups?: string[];
@@ -28,7 +29,7 @@ export type GetAttributesWithValuesParams = PaginatedRequestParams & {
  * @param baseUrl - The base URL for the REST API.
  * @param [parameters] - *Optional* The query parameters to include in the request.
  *
- * @returns A request object with a GET request for the `/attributes/wit-values` endpoint and the specified query parameters.
+ * @returns A request object with a GET request for the `/attributes/with-values/` endpoint and the specified query parameters.
  */
 export function getAttributesWithValuesRequest(baseUrl: string, parameters?: GetAttributesWithValuesParams): Request {
    const url = new URL(`${baseUrl}/attributes/with-values/`);
@@ -36,7 +37,7 @@ export function getAttributesWithValuesRequest(baseUrl: string, parameters?: Get
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
    if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
    if (parameters?.days) url.searchParams.append("days", parameters.days.toString());
-   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax.toISOString().split("T")[0]);
+   if (parameters?.dateMax) url.searchParams.append("date_max", toDateString(parameters.dateMax));
    if (parameters?.groups) url.searchParams.append("groups", parameters.groups.join(","));
    if (parameters?.attributes) url.searchParams.append("attributes", parameters.attributes.join(","));
    if (parameters?.templates) url.searchParams.append("templates", parameters.templates.join(","));

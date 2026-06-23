@@ -1,14 +1,15 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import { toDateString } from "../../util/dateUtils.ts";
 
 /**
  * Represents the query parameters for a request to get a list of insights.
  */
 export type GetInsightsParams = PaginatedRequestParams & {
-   /** *Optional* Oldest date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
-   dateMin?: string;
+   /** *Optional* Oldest date (inclusive) of results to be returned. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   dateMin?: Date | string;
 
-   /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
-   dateMax?: string;
+   /** *Optional* Most recent date (inclusive) of results to be returned. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   dateMax?: Date | string;
 
    /** *Optional* Filter by insight priority, where `1` = today and `4` = last month. */
    priority?: number;
@@ -26,8 +27,8 @@ export function getInsightsRequest(baseUrl: string, parameters?: GetInsightsPara
 
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
    if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
-   if (parameters?.dateMin) url.searchParams.append("date_min", parameters.dateMin);
-   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax);
+   if (parameters?.dateMin) url.searchParams.append("date_min", toDateString(parameters.dateMin));
+   if (parameters?.dateMax) url.searchParams.append("date_max", toDateString(parameters.dateMax));
    if (parameters?.priority) url.searchParams.append("priority", parameters.priority.toString());
 
    return new Request(url.toString());

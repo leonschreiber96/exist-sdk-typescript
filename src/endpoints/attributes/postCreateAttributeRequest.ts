@@ -35,7 +35,7 @@ export type CreateAttributeByNameParams = CreateAttributeParams & {
 /**
  * Represents the response from a request to create attributes.
  */
-export type CreatettributesResponse = {
+export type CreateAttributesResponse = {
    success: Attribute[];
    error: { title: string; error_code: string; error: string }[];
 };

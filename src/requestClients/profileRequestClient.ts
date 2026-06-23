@@ -13,12 +13,6 @@ export default class ProfileRequestClient extends AuthorizedRequestClient {
     */
    public async getUserProfile(): Promise<UserProfile> {
       const request = getUserProfileRequest(this.baseUrl);
-      const response = await this.authAndFetch<UserProfile>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get user profile: ${response.statusCode}`);
-      }
-
-      return response as UserProfile;
+      return await this.authAndFetch<UserProfile>(request, "get user profile");
    }
 }

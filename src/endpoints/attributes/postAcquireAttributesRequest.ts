@@ -4,14 +4,14 @@ type AcquireAttributeParam = {
    /** *Optional* Boolean flag to set this attribute as manually updated or not */
    manual?: boolean;
 
-   /** *Optional* Boolean flag in query parameters which, if set, provides a full attribute object in the response for each successful acquisition */
+   /** *Optional* Boolean flag which, if set, provides a full attribute object in the response for each successful acquisition */
    success_attributes?: boolean;
 };
 
 /**
  * Represents the parameters for a request to acquire an attribute template.
  */
-export type AquireAttributeTemplateParam = AcquireAttributeParam & {
+export type AcquireAttributeTemplateParam = AcquireAttributeParam & {
    /** The name of the attribute template to acquire */
    template: AttributeTemplateId;
 };
@@ -27,7 +27,7 @@ export type AcquireAttributeByNameParam = AcquireAttributeParam & {
 /**
  * Represents the response from a request to acquire attributes.
  */
-export type AquireAttributesResponse = {
+export type AcquireAttributesResponse = {
    success: { name: string; active: boolean }[];
    error: { title: string; error_code: string; error: string }[];
 };
@@ -39,9 +39,9 @@ export type AquireAttributesResponse = {
  *
  * @returns A request object with a POST request for the `/attributes/acquire/` endpoint and the specified parameters.
  */
-export function aquireAttributesRequest(
+export function acquireAttributesRequest(
    baseUrl: string,
-   parameters: (AquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
+   parameters: (AcquireAttributeTemplateParam | AcquireAttributeByNameParam)[],
 ): Request {
    const url = new URL(`${baseUrl}/attributes/acquire/`);
 

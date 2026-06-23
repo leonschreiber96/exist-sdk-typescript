@@ -7,6 +7,7 @@ import {
 } from "../endpoints/correlations/getCorrelationsRequest.ts";
 import type { Correlation } from "../model/correlation.ts";
 import type { PaginatedResponse } from "../model/paginatedResponse.ts";
+import { ExistApiError } from "../existApiError.ts";
 
 export default class CorrelationRequestClient extends AuthorizedRequestClient {
    constructor(authorizer: ExistAuthorizer, baseUrl: string) {
@@ -22,31 +23,24 @@ export default class CorrelationRequestClient extends AuthorizedRequestClient {
     */
    public async getMany(parameters?: GetCorrelationsParams): Promise<PaginatedResponse<Correlation>> {
       const request = getCorrelationsRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Correlation>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get correlations: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<Correlation>;
+      return await this.authAndFetch<PaginatedResponse<Correlation>>(request, "get correlations");
    }
 
    /**
-    * Takes parameters for the two related attributes and returns one or zero correlations, depending on whether Exist has found something.
+    * Takes parameters for the two related attributes and returns the correlation if Exist has found one, or `null` if none exists.
     * Will only return a result if at least one of the attributes is in your read scopes (see https://developer.exist.io/reference/correlations/#find-a-specific-correlation-combination).
     *
     * @param attribute1 - The name of the first attribute to compare.
     * @param attribute2 - The name of the second attribute to compare.
-    * @returns The correlation between the two attributes as a `Correlation` object.
+    * @returns The correlation between the two attributes, or `null` if no correlation has been found.
     */
-   public async getSingle(attribute1: string, attribute2: string): Promise<Correlation> {
+   public async getSingle(attribute1: string, attribute2: string): Promise<Correlation | null> {
       const request = getCorrelationRequest(this.baseUrl, [attribute1, attribute2]);
-      const response = await this.authAndFetch<Correlation>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get correlation: ${response.statusCode}`);
+      try {
+         return await this.authAndFetch<Correlation>(request, `get correlation for "${attribute1}" and "${attribute2}"`);
+      } catch (e) {
+         if (e instanceof ExistApiError && e.statusCode === 404) return null;
+         throw e;
       }
-
-      return response as Correlation;
    }
 }

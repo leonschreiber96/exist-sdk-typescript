@@ -1,11 +1,12 @@
 import type { PaginatedRequestParams } from "../paginatedRequestParams.ts";
+import { toDateString } from "../../util/dateUtils.ts";
 
 /**
  * Represents the query parameters for a request to get a single attribute and its values.
  */
 export type GetAttributeParams = PaginatedRequestParams & {
-   /** *Optional* Most recent date (inclusive) of results to be returned, in format `YYYY-mm-dd`. */
-   dateMax?: Date;
+   /** *Optional* Most recent date (inclusive) of results to be returned. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   dateMax?: Date | string;
 };
 
 /**
@@ -22,7 +23,7 @@ export function getAttributeRequest(baseUrl: string, attribute: string, paramete
    url.searchParams.append("attribute", attribute);
    if (parameters?.limit) url.searchParams.append("limit", parameters.limit.toString());
    if (parameters?.page) url.searchParams.append("page", parameters.page.toString());
-   if (parameters?.dateMax) url.searchParams.append("date_max", parameters.dateMax.toISOString().split("T")[0]);
+   if (parameters?.dateMax) url.searchParams.append("date_max", toDateString(parameters.dateMax));
 
    return new Request(url.toString());
 }

@@ -1,5 +1,6 @@
 import type ExistAuthorizer from "./existAuthorizer.ts";
 import BaseRequestClient from "../requestClients/_baseRequestClient.ts";
+import { ExistApiError } from "../existApiError.ts";
 
 export default abstract class AuthorizedRequestClient extends BaseRequestClient {
    private authorizer: ExistAuthorizer;
@@ -9,23 +10,27 @@ export default abstract class AuthorizedRequestClient extends BaseRequestClient 
       this.authorizer = authorizer;
    }
 
-   protected async authAndFetch<T>(request: Request): Promise<T & { statusCode: number } | { statusCode: number }> {
+   protected async authAndFetch<T>(
+      request: Request,
+      operation: string,
+   ): Promise<T & { statusCode: number }> {
       this.authorizer.authorizeRequest(request);
       const response = await fetch(request);
 
+      let body: Record<string, unknown> | undefined;
       try {
          const data = await response.json();
-
-         // Only spread when the parsed JSON is a non-null object.
-         // Spreading primitives (string/number/boolean) causes TS2698.
          if (data !== null && typeof data === "object") {
-            return { ...(data as Record<string, unknown>), statusCode: response.status } as T & { statusCode: number };
+            body = data as Record<string, unknown>;
          }
-
-         // Non-object response (e.g. plain text or number) — return status only.
-         return { statusCode: response.status } as { statusCode: number };
-      } catch (_error) {
-         return { statusCode: response.status } as { statusCode: number };
+      } catch {
+         // non-JSON body — leave body undefined
       }
+
+      if (!response.ok) {
+         throw new ExistApiError(operation, response.status, body);
+      }
+
+      return { ...(body ?? {}), statusCode: response.status } as T & { statusCode: number };
    }
 }

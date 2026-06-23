@@ -21,10 +21,12 @@ export default class ExistAuthorizer {
    private refreshToken: string | null = null;
    private expiresIn: number | null = null;
    private scope: Scope | Scope[] | null = null;
+   private logger: (message: string) => void;
 
-   constructor(clientId: string, clientSecret: string) {
+   constructor(clientId: string, clientSecret: string, logger?: (message: string) => void) {
       this.clientId = clientId;
       this.clientSecret = clientSecret;
+      this.logger = logger ?? console.log;
    }
 
    /**
@@ -32,6 +34,11 @@ export default class ExistAuthorizer {
     * @param request The request to authorize.
     */
    public authorizeRequest(request: Request): void {
+      if (!this.oAuthToken) {
+         throw new Error(
+            "No OAuth token available. Call useTokens(), useAuthorizationFile(), or useOAuthFlow() before making requests.",
+         );
+      }
       request.headers.set("Authorization", `Bearer ${this.oAuthToken}`);
    }
 
@@ -44,10 +51,10 @@ export default class ExistAuthorizer {
 
       const data = JSON.parse(file) as OAuthTokenResponse;
       if (!data.access_token) {
-         throw new Error("Invalid authorization file: missing oAuthToken");
+         throw new Error("Invalid authorization file: missing access_token");
       }
       if (!data.refresh_token) {
-         throw new Error("Invalid authorization file: missing refreshToken");
+         throw new Error("Invalid authorization file: missing refresh_token");
       }
       this.oAuthToken = data.access_token;
       this.refreshToken = data.refresh_token;
@@ -66,36 +73,39 @@ export default class ExistAuthorizer {
    }
 
    /**
-    * Use the OAuth flow to authorize with Exist. This will provide the url to visit to authorize Exist, and will wait for the user to authorize the client.
+    * Use the OAuth flow to authorize with Exist. Prints the authorization URL via the configured logger,
+    * waits for the user to complete the flow, then stores and returns the resulting tokens.
     * @param scope List of scopes to request authorization for (see https://developer.exist.io/reference/authentication/oauth2/#scopes).
     * @param redirectUri The URI to send the authorization grant to. Should match the redirect URI set in the Exist developer client settings.
     * @param [callback] *Optional* A callback function to handle the OAuth token response (e.g., to save the tokens to a file).
+    * @returns The OAuth token response containing the access token, refresh token, and other details.
     */
    public async useOAuthFlow(
       scope: Scope | Scope[],
       redirectUri: string,
       callback?: (grant: OAuthTokenResponse) => void,
-   ): Promise<void> {
+   ): Promise<OAuthTokenResponse> {
       const authorizationGrant = await this.getOAuthAuthorizationGrant(scope, redirectUri);
-      const tokens = await this.getOAuthTokens(authorizationGrant, redirectUri) as OAuthTokenResponse;
+      const tokens = (await this.getOAuthTokens(authorizationGrant, redirectUri)) as OAuthTokenResponse;
 
       this.oAuthToken = tokens.access_token;
       this.refreshToken = tokens.refresh_token;
       this.scope = tokens.scope.split("+") as Scope | Scope[];
       this.expiresIn = tokens.expires_in;
 
-      if (!callback) {
-         console.log("Authorization successful!", tokens);
-      } else {
+      if (callback) {
          callback(tokens);
       }
+
+      return tokens;
    }
 
    /**
-    * Refresh the OAuth token using the refresh token. This will update the current OAuth token, refresh token, and expiration time.
-    * Don't forget to save the new tokens to a file!
+    * Refresh the OAuth token using the refresh token. Updates the stored tokens and returns the new token response.
+    * Don't forget to save the new tokens!
+    * @returns The new OAuth token response containing the updated access token, refresh token, and other details.
     */
-   public async refreshOAuthToken(): Promise<void> {
+   public async refreshOAuthToken(): Promise<OAuthTokenResponse> {
       const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
 
       const response = await fetch(oAuthUrl, {
@@ -108,12 +118,14 @@ export default class ExistAuthorizer {
             client_secret: this.clientSecret,
          }),
       });
-      const data = await response.json() as OAuthTokenResponse;
+      const data = (await response.json()) as OAuthTokenResponse;
 
       this.oAuthToken = data.access_token;
       this.refreshToken = data.refresh_token;
       this.expiresIn = data.expires_in;
       this.scope = data.scope?.split("+") as Scope | Scope[];
+
+      return data;
    }
 
    /**
@@ -136,10 +148,7 @@ export default class ExistAuthorizer {
       Deno.writeTextFileSync(filePath, JSON.stringify(data, null, 3));
    }
 
-   private getOAuthTokens(
-      authorizationGrant: string,
-      redirectUri: string,
-   ): Promise<OAuthTokenResponse> {
+   private getOAuthTokens(authorizationGrant: string, redirectUri: string): Promise<OAuthTokenResponse> {
       return new Promise((resolve, reject) => {
          const oAuthUrl = `${this.oAuthServiceUrl}/access_token`;
 
@@ -165,10 +174,7 @@ export default class ExistAuthorizer {
       });
    }
 
-   private getOAuthAuthorizationGrant(
-      scope: Scope | Scope[],
-      redirectUri: string,
-   ): Promise<string> {
+   private getOAuthAuthorizationGrant(scope: Scope | Scope[], redirectUri: string): Promise<string> {
       const params = {
          client_id: this.clientId,
          response_type: "code",
@@ -184,9 +190,8 @@ export default class ExistAuthorizer {
       }
 
       return new Promise((resolve, reject) => {
-         console.log(`Please visit this URL to authorize Exist: ${oAuthUrl.replace("%2B", "+")}`);
+         this.logger(`Please visit this URL to authorize Exist: ${oAuthUrl.replace("%2B", "+")}`);
 
-         // Replaced Deno.serve with http.createServer
          const server = http.createServer((req, res) => {
             const url = new URL(req.url ?? "", `http://localhost`);
             const code = url.searchParams.get("code");
@@ -205,7 +210,7 @@ export default class ExistAuthorizer {
          });
 
          server.listen(parseInt(redirectUrlObject.port), () => {
-            console.log("Waiting for authorization via OAuth workflow...");
+            this.logger("Waiting for authorization via OAuth workflow...");
          });
       });
    }

@@ -1,3 +1,5 @@
+import { toDateString } from "../../util/dateUtils.ts";
+
 /**
  * Represents the parameters for a request to update an attribute value.
  */
@@ -5,8 +7,8 @@ export type UpdateAttributeValueParam<T> = {
    /** The attribute name, eg. `mood_note` */
    name: string;
 
-   /** The date for which the value should be updated. (Date or string of format `YYYY-mm-dd`) */
-   date: Date | `${number}-${number}-${number}`;
+   /** The date for which the value should be updated. Accepts a `Date` object or a `YYYY-MM-DD` string. */
+   date: Date | string;
 
    /** A valid value for this attribute type. */
    value: T;
@@ -38,7 +40,7 @@ export type UpdateAttributesResponse = {
  */
 export function updateAttributeRequest<T>(
    baseUrl: string,
-   ...parameters: UpdateAttributeValueParam<T>[]
+   parameters: UpdateAttributeValueParam<T>[],
 ): Request {
    const url = new URL(`${baseUrl}/attributes/update/`);
 
@@ -49,7 +51,7 @@ export function updateAttributeRequest<T>(
       },
       body: JSON.stringify(parameters.map((param) => ({
          name: param.name,
-         date: param.date instanceof Date ? param.date.toISOString().split("T")[0] : param.date,
+         date: toDateString(param.date),
          value: param.value,
       }))),
    });

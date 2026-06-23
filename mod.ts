@@ -1,5 +1,6 @@
 export { default as ExistClient } from "./src/existClient.ts";
 export { default as ExistAuthorizer } from "./src/authorization/existAuthorizer.ts";
+export { ExistApiError } from "./src/existApiError.ts";
 
 export { type Attribute } from "./src/model/attribute.ts";
 export { type AttributeAverage } from "./src/model/attributeAverage.ts";
@@ -16,11 +17,11 @@ export { type GetAttributesParams } from "./src/endpoints/attributes/getAttribut
 export { type GetAttributesWithValuesParams } from "./src/endpoints/attributes/getAttributesWithValuesRequest.ts";
 export { type GetAttributeTemplatesParams } from "./src/endpoints/attributes/getAttributeTemplatesRequest.ts";
 export { type GetOwnedAttributesParams } from "./src/endpoints/attributes/getOwnedAttributesRequest.ts";
-export { type AquireAttributeTemplateParam, type AcquireAttributeByNameParam, type AquireAttributesResponse } from "./src/endpoints/attributes/postAquireAttributesRequest.ts";
-export { type CreateTemplatedAttributeParams, type CreateAttributeByNameParams, type CreatettributesResponse } from "./src/endpoints/attributes/postCreateAttributeRequest.ts";
+export { type AcquireAttributeTemplateParam, type AcquireAttributeByNameParam, type AcquireAttributesResponse } from "./src/endpoints/attributes/postAcquireAttributesRequest.ts";
+export { type CreateTemplatedAttributeParams, type CreateAttributeByNameParams, type CreateAttributesResponse } from "./src/endpoints/attributes/postCreateAttributeRequest.ts";
 export { type IncrementAttributeValueParam, type IncrementAttributesResponse } from "./src/endpoints/attributes/postIncrementUpdate.ts";
 export { type ReleaseAttributesResponse } from "./src/endpoints/attributes/postReleaseAttributesRequest.ts";
-export { type UpdateAttributeValueParam,type UpdateAttributesResponse } from "./src/endpoints/attributes/postUpdateAttribute.ts";
+export { type UpdateAttributeValueParam, type UpdateAttributesResponse } from "./src/endpoints/attributes/postUpdateAttribute.ts";
 export { type GetAveragesParams } from "./src/endpoints/averages/getAveragesRequest.ts";
 export { type GetCorrelationsParams } from "./src/endpoints/correlations/getCorrelationsRequest.ts";
 export { type GetInsightsParams } from "./src/endpoints/insights/getInsightsRequest.ts";

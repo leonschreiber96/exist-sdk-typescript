@@ -7,19 +7,19 @@ export type ReleaseAttributesResponse = {
 };
 
 /**
- * Returns a request object with a GET request that releases a previously acquired attribute (seehttps://developer.exist.io/reference/attribute_ownership/#release-attributes).
+ * Returns a request object with a POST request that releases previously acquired attributes (see https://developer.exist.io/reference/attribute_ownership/#release-attributes).
  * @param baseUrl - The base URL for the REST API.
  * @param attributes - The names of the attributes to release.
  *
- * @returns A request object with a GET request for the `/attributes/release/` endpoint and the specified query parameters.
+ * @returns A request object with a POST request for the `/attributes/release/` endpoint and the specified parameters.
  */
-export function releaseAttributesRequest(baseUrl: string, ...attributes: string[]): Request {
+export function releaseAttributesRequest(baseUrl: string, attributes: string[]): Request {
    const url = `${baseUrl}/attributes/release/`;
    return new Request(url, {
       method: "POST",
       headers: {
          "Content-Type": "application/json",
       },
-      body: JSON.stringify(attributes),
+      body: JSON.stringify(attributes.map((name) => ({ name }))),
    });
 }

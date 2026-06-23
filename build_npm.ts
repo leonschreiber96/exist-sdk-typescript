@@ -7,8 +7,11 @@ await build({
    entryPoints: ["./mod.ts"],
    outDir: "./npm",
    shims: {
-      // see JS docs for overview and more options
       deno: true,
+   },
+   filterDiagnostic: (diagnostic) => {
+      const file = diagnostic.file?.fileName ?? "";
+      return !file.includes("/tests/") && !file.includes("/@std/");
    },
    package: {
       "name": "exist-sdk-typescript",

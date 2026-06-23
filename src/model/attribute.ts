@@ -12,7 +12,7 @@ import type { AttributeValueType } from "./attributeValueType.ts";
  *
  * If there is no data for a particular date, this will be reflected with a null value — you should expect to receive a list of results containing every single day, rather than days without data being omitted.
  */
-export interface Attribute {
+export interface Attribute<T = string | number | boolean> {
    template: AttributeTemplateId;
    /** Unique ID of the attribute. */
    name: string;
@@ -46,9 +46,9 @@ export interface Attribute {
       /** Human-readable name of the service. */
       label: string;
    }[];
-   /** List of tracked values for this attribute (date ↔ value pairs). */
+   /** List of tracked values for this attribute (date ↔ value pairs). `value` is `null` for days without data. */
    values: {
       date: string;
-      value: string;
-   };
+      value: T | null;
+   }[];
 }

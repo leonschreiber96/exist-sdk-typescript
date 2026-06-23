@@ -17,12 +17,6 @@ export default class InsightRequestClient extends AuthorizedRequestClient {
     */
    public async getMany(parameters?: GetInsightsParams): Promise<PaginatedResponse<Insight>> {
       const request = getInsightsRequest(this.baseUrl, parameters);
-      const response = await this.authAndFetch<PaginatedResponse<Insight>>(request);
-
-      if (response.statusCode !== 200) {
-         throw new Error(`Failed to get insights: ${response.statusCode}`);
-      }
-
-      return response as PaginatedResponse<Insight>;
+      return await this.authAndFetch<PaginatedResponse<Insight>>(request, "get insights");
    }
 }
